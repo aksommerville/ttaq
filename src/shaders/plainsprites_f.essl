@@ -1,0 +1,16 @@
+#version 100
+
+uniform sampler2D sampler;
+varying vec2 xfertex;
+varying float xferxform;
+
+void main(void) {
+  vec2 texp=xfertex*0.0625;
+  vec2 tc;
+  if (xferxform>=1.0) {
+    tc=vec2((1.0-gl_PointCoord.x),gl_PointCoord.y)*0.0625+texp;
+  } else {
+    tc=gl_PointCoord*0.0625+texp;
+  }
+  gl_FragColor=texture2D(sampler,tc);
+}

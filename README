@@ -1,0 +1,51 @@
+Tag-Team Adventure Quest
+By Andy Sommerville: ak sommerville at g mail dot com
+10 November 2013
+
+-------------------------------------------------------------------------------
+BUILD AND INSTALL
+
+From this directory, enter:
+  make install
+  
+It takes a few minutes. You will see this if it worked:
+  Installed successfully. Enter 'ttaq' anywhere to play.
+  
+Building will fail if you do not have my helper libraries "akau", "linput", "pig" and "pipng".
+These are all available via sourceforge:
+  https://sourceforge.net/projects/aksraspilibs/
+  
+In the unlikely event that you decide you don't like TTAQ, do this to remove it:
+  make uninstall
+  
+Once installed, this project directory is no longer needed.
+  
+-------------------------------------------------------------------------------
+SAVED GAME
+
+Your progress saves automatically.
+I haven't made in-game UI for resetting it, so you have to reset it at the command line:
+  rm ~/.ttaq/saved-game
+  
+-------------------------------------------------------------------------------
+CONTROLS
+
+See the input config file 'etc/input' for a description of input options.
+This file installs at '~/.ttaq/input'.
+The defaults should be adequate for most users.
+
+-------------------------------------------------------------------------------
+CREDITS AND COPYRIGHT
+
+This is public domain. Use it any way you like.
+It would be rude of you to make money off this without cutting me a slice.
+If you reuse any of my work, I'd like to hear about it.
+
+All code, graphics, design, and music are written by Andy Sommerville.
+
+All sound effects were taken from http://freesound.org/.
+Sounds were made by these freesound users:
+  fins
+  JoelAudio
+  grunz
+  club sound

@@ -1,0 +1,19 @@
+#version 100
+
+uniform vec2 screenposition; // normalized device space
+uniform vec2 screensize;     // normalized device space
+uniform vec2 gamescreensize; // game space
+
+attribute vec2 position;
+attribute vec2 texposition;
+attribute float xform;
+
+varying vec2 xfertex;
+varying float xferxform;
+  
+void main(void) {
+  gl_Position=vec4(screenposition+(position/gamescreensize)*screensize,0.0,1.0);
+  gl_PointSize=32.0;//TODO pass sprite size as a uniform?
+  xfertex=texposition;
+  xferxform=xform;
+}

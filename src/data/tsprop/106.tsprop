@@ -1,0 +1,99 @@
+02 latch
+0a solid
+0b neighbor15
+19 solid
+1a solid
+
+05 heal
+06 heal
+07 heal
+08 heal
+15 heal
+16 heal
+17 heal
+18 heal
+25 heal
+26 heal
+27 heal
+28 heal
+35 heal
+36 heal
+37 heal
+38 heal
+
+10 solid neighbor15
+11 solid
+12 solid
+13 solid
+14 solid
+20 solid
+21 solid
+22 solid
+23 solid
+24 solid
+30 solid
+31 solid
+32 solid
+33 solid
+34 solid
+39 solid
+
+3a hole neighbor15
+3b hole
+3c hole
+3d hole
+3e hole
+4a hole
+4b hole
+4c hole
+4d hole
+4e hole
+5a hole
+5b hole
+5c hole
+5d hole
+5e hole
+
+40 solid neighbor15
+41 solid
+42 solid
+43 solid
+44 solid
+45 solid
+50 solid
+51 solid
+52 solid
+53 solid
+54 solid
+55 solid
+60 solid
+61 solid
+62 solid
+63 solid
+64 solid
+65 solid
+
+46 latch
+47 latch
+48 latch
+49 latch
+56 latch
+57 latch
+58 latch
+59 latch
+66 latch
+67 latch
+68 latch
+69 latch
+
+70 solid
+71 solid
+72 solid
+73 solid
+80 solid
+81 solid
+82 solid
+83 solid
+84 solid
+85 solid
+86 solid

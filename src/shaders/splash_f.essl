@@ -1,0 +1,17 @@
+#version 100
+
+uniform sampler2D sampler;
+
+varying vec2 ftexposition;
+varying float fopacity;
+
+void main() {
+  if (fopacity<=0.0) {
+    discard;
+  } else if (fopacity<1.0) {
+    vec4 texcolor=texture2D(sampler,ftexposition);
+    gl_FragColor=vec4(texcolor.rgb,texcolor.a*fopacity);
+  } else {
+    gl_FragColor=texture2D(sampler,ftexposition);
+  }
+}

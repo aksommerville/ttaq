@@ -1,0 +1,158 @@
+# Tag-Team Adventure Quest
+# Input maps.
+
+#------------------------------------------------------------------------------
+#
+# Global actions are described in single lines:
+#   global KEY ACTION
+# 
+# Only one action is permitted per key.
+# In case of conflict, the last one (highest line number) holds.
+# KEY is any linux 'KEY_*' or 'BTN_*' code, see <linux/input.h>.
+# ACTION is one of:
+#   QUIT
+#   PAUSE
+#   SAVE
+# Buttons assigned to a global action can not be used for player controls.
+# These maps work from any device, even detached ones.
+#
+#------------------------------------------------------------------------------
+
+global KEY_ESC      QUIT
+global KEY_P        PAUSE
+global KEY_F1       SAVE
+
+#------------------------------------------------------------------------------
+# 
+# Device rules are described in blocks:
+#   device "NAME" bus=BUSNAME vendor=VENDORID product=PRODUCTID
+#     ABSOLUTE_AXIS_NAME LOW_BUTTON HIGH_BUTTON
+#     ABSOLUTE_AXIS_NAME HIGH_BUTTON
+#     KEY_NAME BUTTON
+#   end
+#
+# "NAME" is optional; it defaults to "*" if unset.
+# This is compared to the device's reported name:
+#   - Leading and trailing space is ignored.
+#   - Any amount of whitespace is equivalent to a single space.
+#   - '*' matches any amount of anything.
+# Name must match the device.
+#
+# bus, vendor, and product are optional.
+# These are integers which if nonzero compare against the values reported by device.
+# bus may use symbolic names, see 'BUS_*' in <linux/input.h>
+# These all must match if provided.
+#
+# ABSOLUTE_AXIS_NAME and KEY_NAME are 'ABS_*', 'KEY_*' or 'BTN_*' codes from <linux/input.h>.
+# 
+# LOW_BUTTON, HIGH_BUTTON, and BUTTON are player outputs:
+#   UP DOWN LEFT RIGHT: [required] Movement.
+#   ACTION: [required] Attack (different for each hero).
+#   SWITCH: [optional] Switch control to another hero.
+#   FOLLOWME: [optional] Cause offscreen detached heroes to jump automatically to wherever this hero is.
+#   DETACH: [optional] Detach controller.
+#
+# It is possible for multiple rules to match a device.
+# We make an effort to identify the best one.
+# Explicit names and properties (bus,vendor,product) are a great way to ensure matching.
+#
+#------------------------------------------------------------------------------
+
+# This default map should work for just about any device -- keyboard or joystick.
+device
+
+  # Absolute axes. A joystick should have at least one pair of these.
+  ABS_X      LEFT RIGHT
+  ABS_Y      UP DOWN
+  ABS_RX     LEFT RIGHT
+  ABS_RY     UP DOWN
+  ABS_HAT0X  LEFT RIGHT
+  ABS_HAT0Y  UP DOWN
+  ABS_HAT1X  LEFT RIGHT
+  ABS_HAT1Y  UP DOWN
+  ABS_HAT2X  LEFT RIGHT
+  ABS_HAT2Y  UP DOWN
+  ABS_HAT3X  LEFT RIGHT
+  ABS_HAT3Y  UP DOWN
+  
+  # Common joystick buttons.
+  BTN_A       ACTION
+  BTN_B       ACTION
+  BTN_C       ACTION
+  BTN_X       ACTION
+  BTN_Y       ACTION
+  BTN_Z       ACTION
+  BTN_SELECT  SWITCH
+  BTN_START   DETACH
+  BTN_TL      SWITCH
+  BTN_TR      SWITCH
+  BTN_TRIGGER ACTION
+  BTN_THUMB   ACTION
+  BTN_THUMB2  SWITCH
+  BTN_TOP     ACTION
+  BTN_TOP2    ACTION
+  
+  # Keyboard.
+  KEY_UP        UP
+  KEY_DOWN      DOWN
+  KEY_LEFT      LEFT
+  KEY_RIGHT     RIGHT
+  KEY_SPACE     ACTION
+  KEY_TAB       SWITCH
+  KEY_BACKSPACE DETACH
+  KEY_HOME      FOLLOWME
+  
+end
+
+#------------------------------------------------------------------------------
+# These maps are for my own devices. Your mileage will vary. -aks
+
+device "Xbox Joystick"
+  ABS_HAT0X  LEFT RIGHT
+  ABS_HAT0Y  UP DOWN
+  ABS_X      LEFT RIGHT
+  ABS_Y      UP DOWN
+  BTN_A      ACTION
+  BTN_B      ACTION
+  BTN_X      ACTION
+  BTN_Y      FOLLOWME
+  BTN_TR     SWITCH
+  BTN_TL     FOLLOWME
+  BTN_SELECT SWITCH
+  BTN_START  DETACH
+end
+
+device "snowman" # wiimote
+  ABS_X        LEFT RIGHT
+  ABS_Y        UP DOWN
+  BTN_1        ACTION
+  BTN_2        ACTION
+  BTN_SELECT   SWITCH   # -
+  BTN_START    DETACH   # +
+  BTN_A        FOLLOWME
+end
+
+device "lamb" # wiimote
+  ABS_X        LEFT RIGHT
+  ABS_Y        UP DOWN
+  BTN_1        ACTION
+  BTN_2        ACTION
+  BTN_SELECT   SWITCH   # -
+  BTN_START    DETACH   # +
+  BTN_A        FOLLOWME
+end
+
+device "USB Gamepad" # NES+SNES knockoffs (they are identical at protocol level)
+  # The buttons for this one get assigned willy-nilly by usbcore (or whoever it is...).
+  # That's why I'm using numbers here; the names would be misleading.
+  ABS_X        LEFT RIGHT
+  ABS_Y        UP DOWN
+  BTN:0x121    ACTION   # A
+  BTN:0x122    ACTION   # B
+  BTN:0x120    SWITCH   # X
+  BTN:0x123    FOLLOWME # Y
+  BTN:0x128    SWITCH   # SELECT
+  BTN:0x129    DETACH   # START
+  BTN:0x124    FOLLOWME # L
+  BTN:0x125    SWITCH   # R
+end

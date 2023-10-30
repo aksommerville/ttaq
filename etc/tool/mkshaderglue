@@ -1,0 +1,11 @@
+#!/bin/sh
+
+DSTPATH="$1"
+UNITNAME="$(echo $1 | sed 's/.*\/\([^/.]*\)\.s/\1/')"
+SRCPATH="src/shaders/$UNITNAME.essl"
+
+echo ".global adv_shader_$UNITNAME" > $DSTPATH
+echo "adv_shader_$UNITNAME:" >> $DSTPATH
+echo ".incbin \"$SRCPATH\"" >> $DSTPATH
+# Ensure termination:
+echo ".int 0" >> $DSTPATH

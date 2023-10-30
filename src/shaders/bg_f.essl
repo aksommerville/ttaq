@@ -1,0 +1,19 @@
+#version 100
+
+uniform sampler2D sampler;
+uniform float lights_out;
+uniform vec2 lightpos;
+
+varying vec2 ftexposition;
+
+void main() {
+
+  if (lights_out>1.1) discard;
+  if (lights_out>0.01) {
+    vec2 dlight=lightpos-ftexposition;
+    float displacement=abs(dlight.x)+abs(dlight.y);
+    if (displacement>0.1) discard;
+  }
+
+  gl_FragColor=texture2D(sampler,ftexposition);
+}

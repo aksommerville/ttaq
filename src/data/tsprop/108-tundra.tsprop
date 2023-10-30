@@ -1,0 +1,34 @@
+03 solid
+05 latch
+
+10 solid neighbor15
+11 solid
+12 solid
+13 solid
+14 solid
+20 solid
+21 solid
+22 solid
+23 solid
+24 solid
+30 solid
+31 solid
+32 solid
+33 solid
+34 solid
+
+15 hole neighbor15
+16 hole
+17 hole
+18 hole
+19 hole
+25 hole
+26 hole
+27 hole
+28 hole
+29 hole
+35 hole
+36 hole
+37 hole
+38 hole
+39 hole

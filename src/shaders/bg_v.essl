@@ -1,0 +1,14 @@
+#version 100
+
+uniform vec2 screenposition;
+uniform vec2 screensize;
+
+attribute vec2 position;
+attribute vec2 texposition;
+
+varying vec2 ftexposition;
+
+void main() {
+  gl_Position=vec4(screenposition+position*screensize,0.0,1.0);
+  ftexposition=position;
+}
