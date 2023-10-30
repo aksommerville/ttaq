@@ -6,7 +6,6 @@
 #include "sprite/adv_sprclass.h"
 #include "sprite/class/adv_sprite_hero.h"
 #include "res/adv_res.h"
-#include <akau.h>
 #include <linux/input.h>
 #include <signal.h>
 #include <sys/time.h>
@@ -48,7 +47,7 @@ static int adv_init(int argc,char **argv) {
   signal(SIGTERM,adv_rcvsig);
   signal(SIGQUIT,adv_rcvsig);
   
-  if (akau_init(44100)<0) return -1;
+  //TODO if (akau_init(44100)<0) return -1;
 
   if ((err=adv_sprgrp_init())<0) return err;
   if ((err=adv_video_init())<0) return err;
@@ -70,7 +69,7 @@ static int adv_init(int argc,char **argv) {
 static void adv_quit() {
   adv_input_quit();
   adv_res_quit();
-  akau_quit();
+  //TODO akau_quit();
   adv_video_quit();
   adv_sprgrp_quit();
 }

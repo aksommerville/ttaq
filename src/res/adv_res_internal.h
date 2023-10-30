@@ -6,7 +6,6 @@
 #include "game/adv_map.h"
 #include "sprite/adv_sprdef.h"
 #include "video/adv_video.h"
-#include <akau.h>
 #include <sys/stat.h>
 #include <dirent.h>
 

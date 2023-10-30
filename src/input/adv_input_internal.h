@@ -3,7 +3,6 @@
 
 #include "adv.h"
 #include "adv_input.h"
-#include <linput.h>
 #include <linux/input.h>
 
 struct adv_useraction {
@@ -78,7 +77,7 @@ int adv_inmap_absmap_search(struct adv_inmap *inmap,int code);
 int adv_inmap_absmap_insert(struct adv_inmap *inmap,int p,int code);
 int adv_inmap_keymap_search(struct adv_inmap *inmap,int code);
 int adv_inmap_keymap_insert(struct adv_inmap *inmap,int p,int code);
-int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid); // => score
+//TODO int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid); // => score
 #define ADV_INMAP_SCORE_BEST 39
 #define ADV_BTNID_CRITICAL (ADV_BTNID_UP|ADV_BTNID_DOWN|ADV_BTNID_LEFT|ADV_BTNID_RIGHT|ADV_BTNID_ACTION)
 int adv_inmap_eval_header(struct adv_inmap *inmap,const char *src,int srcc,const char *refname,int lineno);

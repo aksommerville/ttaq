@@ -1,7 +1,6 @@
 #include "adv_res_internal.h"
 #include "sprite/adv_sprite.h"
 #include "sprite/class/adv_sprite_hero.h"
-#include <pipng.h>
 
 /* map list primitives
  *****************************************************************************/
@@ -106,6 +105,7 @@ static void *_loadtilesheet(int id,int colortype) {
     fprintf(stderr,"ERROR: tilesheet #%d not found\n",id);
     return 0;
   }
+  #if 0
   struct pipng png={0};
   if (pipng_decode_file(&png,adv_resmgr.tilesheetv[p].path)<0) {
     fprintf(stderr,"%s:ERROR: %s\n",adv_resmgr.tilesheetv[p].path,png.msg);
@@ -120,6 +120,8 @@ static void *_loadtilesheet(int id,int colortype) {
   void *rtn=png.pixels; png.pixels=0;
   pipng_cleanup(&png);
   return rtn;
+  #endif
+  return 0;
 }
 
 /* load graphics for new map

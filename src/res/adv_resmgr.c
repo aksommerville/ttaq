@@ -1,5 +1,4 @@
 #include "adv_res_internal.h"
-#include <pipng.h>
 
 /* globals
  *****************************************************************************/
@@ -277,7 +276,7 @@ void adv_res_quit() {
     free(adv_resmgr.sprdefv);
   }
   if (adv_resmgr.songv) {
-    while (adv_resmgr.songc-->0) akau_song_del(adv_resmgr.songv[adv_resmgr.songc]);
+    //TODO while (adv_resmgr.songc-->0) akau_song_del(adv_resmgr.songv[adv_resmgr.songc]);
     free(adv_resmgr.songv);
   }
   adv_res_wipe_globals();
@@ -359,8 +358,10 @@ int adv_res_get_miscimg(void *dstpp,int *w,int *h,int miscimgid) {
     while (base[basec]) basec++;
     if (pathc>=sizeof(path)-basec) { closedir(dir); return -1; }
     memcpy(path+pathc,base,basec+1);
+    #if 0 //TODO
     struct pipng png={0};
     if ((pipng_decode_file(&png,path)<0)||(pipng_convert(&png,8,6)<0)) {
+    if (1) {
       fprintf(stderr,"%s: %s\n",path,png.msg);
       pipng_cleanup(&png);
       closedir(dir);
@@ -372,6 +373,7 @@ int adv_res_get_miscimg(void *dstpp,int *w,int *h,int miscimgid) {
     *h=png.h;
     pipng_cleanup(&png);
     return 0;
+    #endif
   }
   closedir(dir);
   return -1;

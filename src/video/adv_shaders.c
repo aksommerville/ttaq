@@ -73,7 +73,7 @@ static GLuint adv_shaders_compile(const char *refname,const char *vsrc,const cha
 int adv_shaders_load() {
 
   int screenw=0,screenh=0;
-  if (pig_get_screen_size(&screenw,&screenh)<0) return -1;
+  //TODO if (pig_get_screen_size(&screenw,&screenh)<0) return -1;
   if ((screenw<1)||(screenh<1)) return -1;
   GLfloat nscreenx=-(GLfloat)ADV_SCREEN_W/screenw;
   GLfloat nscreeny= (GLfloat)ADV_SCREEN_H/screenh;

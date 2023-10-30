@@ -1,7 +1,6 @@
 #include "adv_video_internal.h"
 #include "res/adv_res.h"
 #include "game/adv_map.h"
-#include <pipng.h>
 
 struct adv_video adv_video={0};
 
@@ -12,8 +11,8 @@ int adv_video_init() {
   int err;
   memset(&adv_video,0,sizeof(struct adv_video));
   
-  if ((err=pig_init(PIG_API_OPENGLES2))<0) return err;
-  pig_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+  //TODO if ((err=pig_init(PIG_API_OPENGLES2))<0) return err;
+  //pig_get_screen_size(&adv_video.screenw,&adv_video.screenh);
   glClearColor(0.0,0.0,0.0,1.0);
 
   if (!(adv_video.bgbuffer=calloc(ADV_SCREEN_W*3,ADV_SCREEN_H))) return err;
@@ -60,7 +59,7 @@ void adv_video_quit() {
   glDeleteTextures(1,&adv_video.texture_plainsprites);
   glDeleteProgram(adv_video.program_splash);
   glDeleteTextures(1,&adv_video.texture_splash);
-  pig_quit();
+  //TODO pig_quit();
   memset(&adv_video,0,sizeof(struct adv_video));
 }
 
@@ -156,7 +155,7 @@ int adv_video_update() {
     glDisableVertexAttribArray(ADV_VTXATTR_OPACITY);
   }
 
-  if ((err=pig_swap_sync())<0) return err;
+  //TODO if ((err=pig_swap_sync())<0) return err;
   return 0;
 }
 

@@ -161,7 +161,8 @@ static int adv_inmap_compare_name(const char *pat,int patc,const char *name,int 
 
 /* compare device, outer
  *****************************************************************************/
- 
+
+#if 0 //TODO 
 int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid) {
   if (!inmap||!layout) return 0;
   int score=0;
@@ -202,6 +203,7 @@ int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layou
   
   return score;
 }
+#endif
 
 /* evaluate header
  *****************************************************************************/

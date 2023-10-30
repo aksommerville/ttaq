@@ -1,5 +1,4 @@
 #include "adv_res_internal.h"
-#include <akau.h>
 
 /* synth instruments
  *****************************************************************************/
@@ -49,6 +48,7 @@ static int _adv_load_sound_1(const char *name,int soundid) {
   int pcmc=adv_file_read(&pcm,path);
   if (pcmc<0) return -1;
   if (!pcm) return -1;
+  #if 0 //TODO
   int waveid=akau_wave_load(pcm,pcmc);
   free(pcm);
   if (waveid<0) {
@@ -61,6 +61,9 @@ static int _adv_load_sound_1(const char *name,int soundid) {
   }
   akau_wave_set_name(waveid,name,-1);
   return 0;
+  #else
+  return -1;
+  #endif
 }
  
 int adv_res_load_sounds() {
@@ -85,14 +88,14 @@ int adv_res_load_sounds() {
  *****************************************************************************/
  
 int adv_sound(int soundid) {
-  akau_wave_play(soundid,0x80,0,0);
+  //TODO akau_wave_play(soundid,0x80,0,0);
   return 0;
 }
 
 int adv_song(int songid) {
   if ((songid<0)||(songid>=adv_resmgr.songc)) return 0;
   if (songid==adv_resmgr.songid) return 0;
-  akau_song_play(adv_resmgr.songv[songid]);
+  //TODO akau_song_play(adv_resmgr.songv[songid]);
   adv_resmgr.songid=songid;
   return 0;
 }
@@ -113,6 +116,7 @@ static int adv_resmgr_load_song_1(const char *path,int songid) {
   char *src=0;
   int srcc=adv_file_read(&src,path);
   if ((srcc<0)||!src) return -1;
+  #if 0 //TODO
   struct akau_song *song=0;
   int err=akau_song_compile(&song,src,srcc,path);
   free(src);
@@ -120,13 +124,16 @@ static int adv_resmgr_load_song_1(const char *path,int songid) {
   if (adv_resmgr.songv[songid]) akau_song_del(adv_resmgr.songv[songid]);
   adv_resmgr.songv[songid]=song;
   return 0;
+  #else
+  return -1;
+  #endif
 }
 
 /* load songs
  *****************************************************************************/
  
 int adv_res_load_songs() {
-
+  #if 0 //TODO
   int waveid;
   #define SYNTH(tag) if ((waveid=akau_synthesize_and_load( \
     _adv_synth_##tag,sizeof(_adv_synth_##tag)/sizeof(double),_adv_synth_##tag##_gain,_adv_synth_##tag##_trim \
@@ -162,6 +169,6 @@ int adv_res_load_songs() {
     adv_resmgr_load_song_1(subpath,songid);
   }
   closedir(dir);
-  
+  #endif
   return 0;
 }

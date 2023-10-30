@@ -1,0 +1,392 @@
+diff --git a/Makefile b/Makefile
+index 6623017..a78d750 100644
+--- a/Makefile
++++ b/Makefile
+@@ -13,6 +13,26 @@ AS:=gcc -xassembler-with-cpp -c -O2
+ LD:=gcc -L/opt/vc/lib
+ LDPOST:=-lpig-static -lpipng-static -llinput-static -lGLESv2 -lz -lakau-static -lasound
+ 
++# Hello user!
++# Please pick the appropriate configuration and enable it like so:
++#   ifeq (old pi with bcm,old pi with bcm) # <-- same string twice = enabled
++
++ifeq (old pi with bcm,)
++  CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include
++  AS:=gcc -xassembler-with-cpp -c -O2
++  LD:=gcc -L/opt/vc/lib
++  LDPOST:=-lpig-static -lpipng-static -llinput-static -lGLESv2 -lz -lakau-static -lasound
++  
++else ifeq (linux auto,linux auto)
++  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit
++  AS:=gcc -xassembler-with-cpp -c -O3
++  LD:=gcc
++  LDPOST:=-lm -lz -lasound -lGL
++  
++else
++  $(error Please select configuration. Edit Makefile)
++endif
++
+ #------------------------------------------------------------------------------
+ # Build programs.
+ 
+diff --git a/src/input/adv_controller.c b/src/input/adv_controller.c
+index 0b3e889..06b0674 100644
+--- a/src/input/adv_controller.c
++++ b/src/input/adv_controller.c
+@@ -95,6 +95,7 @@ int adv_controller_setup(struct adv_controller *controller,int devid) {
+   if (!controller) return -1;
+   controller->devid=devid;
+   
++  #if 0 // TODO
+   /* Find the best-matching inmap. */
+   struct linput_device_layout layout={0};
+   if (linput_device_get_layout(&layout,devid)<0) return -1;
+@@ -138,6 +139,7 @@ int adv_controller_setup(struct adv_controller *controller,int devid) {
+     if (adv_controller_keymap_insert(controller,p,inmap->keymapv[i].code)<0) return -1;
+     controller->keymapv[p]=inmap->keymapv[i];
+   }
++  #endif
+   
+   return 0;
+ }
+diff --git a/src/input/adv_inmap.c b/src/input/adv_inmap.c
+index e8f82b2..dc2554e 100644
+--- a/src/input/adv_inmap.c
++++ b/src/input/adv_inmap.c
+@@ -161,7 +161,8 @@ static int adv_inmap_compare_name(const char *pat,int patc,const char *name,int
+ 
+ /* compare device, outer
+  *****************************************************************************/
+- 
++
++#if 0 //TODO 
+ int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid) {
+   if (!inmap||!layout) return 0;
+   int score=0;
+@@ -202,6 +203,7 @@ int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layou
+   
+   return score;
+ }
++#endif
+ 
+ /* evaluate header
+  *****************************************************************************/
+diff --git a/src/input/adv_input_global.c b/src/input/adv_input_global.c
+index bc50d8a..5e9bbee 100644
+--- a/src/input/adv_input_global.c
++++ b/src/input/adv_input_global.c
+@@ -10,9 +10,9 @@ unsigned char adv_inputs[1+ADV_PLAYER_LIMIT]={0};
+  
+ int adv_input_init() {
+   if (adv_input_read_maps()<0) return -1;
+-  if (linput_init(0,1)<0) return -1;
+-  if (linput_set_callbacks(0,adv_input_cb_connect,adv_input_cb_disconnect,adv_input_cb_event)<0) return -1;
+-  if (linput_scan()<0) return -1;
++  //TODO if (linput_init(0,1)<0) return -1;
++  //if (linput_set_callbacks(0,adv_input_cb_connect,adv_input_cb_disconnect,adv_input_cb_event)<0) return -1;
++  //if (linput_scan()<0) return -1;
+   return 0;
+ }
+ 
+@@ -31,7 +31,7 @@ void adv_input_quit() {
+   }
+   memset(&adv_input,0,sizeof(struct adv_input));
+   memset(adv_inputs,0,sizeof(adv_inputs));
+-  linput_quit();
++  //TODO linput_quit();
+ }
+ 
+ /* trivial accessors
+@@ -78,7 +78,7 @@ int adv_input_remove_player(int playerid) {
+  *****************************************************************************/
+  
+ int adv_input_update() {
+-  if (linput_update(0)<0) return -1;
++  //TODO if (linput_update(0)<0) return -1;
+   return 0;
+ }
+ 
+@@ -97,7 +97,7 @@ void adv_input_cb_connect(void *userdata,int devid) {
+   struct adv_controller *controller=0;
+   if (adv_controller_new(&controller)<0) return;
+   if (adv_controller_setup(controller,devid)<0) { 
+-    printf("Unable to configure input device '%s'.\n",linput_device_get_name(devid));
++    //TODO printf("Unable to configure input device '%s'.\n",linput_device_get_name(devid));
+     adv_controller_del(controller); 
+     return; 
+   }
+diff --git a/src/input/adv_input_internal.h b/src/input/adv_input_internal.h
+index 0dd1cfb..c742856 100644
+--- a/src/input/adv_input_internal.h
++++ b/src/input/adv_input_internal.h
+@@ -3,7 +3,6 @@
+ 
+ #include "adv.h"
+ #include "adv_input.h"
+-#include <linput.h>
+ #include <linux/input.h>
+ 
+ struct adv_useraction {
+@@ -78,7 +77,7 @@ int adv_inmap_absmap_search(struct adv_inmap *inmap,int code);
+ int adv_inmap_absmap_insert(struct adv_inmap *inmap,int p,int code);
+ int adv_inmap_keymap_search(struct adv_inmap *inmap,int code);
+ int adv_inmap_keymap_insert(struct adv_inmap *inmap,int p,int code);
+-int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid); // => score
++//TODO int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid); // => score
+ #define ADV_INMAP_SCORE_BEST 39
+ #define ADV_BTNID_CRITICAL (ADV_BTNID_UP|ADV_BTNID_DOWN|ADV_BTNID_LEFT|ADV_BTNID_RIGHT|ADV_BTNID_ACTION)
+ int adv_inmap_eval_header(struct adv_inmap *inmap,const char *src,int srcc,const char *refname,int lineno);
+diff --git a/src/main/adv_main.c b/src/main/adv_main.c
+index e7286f2..72cc95d 100644
+--- a/src/main/adv_main.c
++++ b/src/main/adv_main.c
+@@ -6,7 +6,6 @@
+ #include "sprite/adv_sprclass.h"
+ #include "sprite/class/adv_sprite_hero.h"
+ #include "res/adv_res.h"
+-#include <akau.h>
+ #include <linux/input.h>
+ #include <signal.h>
+ #include <sys/time.h>
+@@ -48,7 +47,7 @@ static int adv_init(int argc,char **argv) {
+   signal(SIGTERM,adv_rcvsig);
+   signal(SIGQUIT,adv_rcvsig);
+   
+-  if (akau_init(44100)<0) return -1;
++  //TODO if (akau_init(44100)<0) return -1;
+ 
+   if ((err=adv_sprgrp_init())<0) return err;
+   if ((err=adv_video_init())<0) return err;
+@@ -70,7 +69,7 @@ static int adv_init(int argc,char **argv) {
+ static void adv_quit() {
+   adv_input_quit();
+   adv_res_quit();
+-  akau_quit();
++  //TODO akau_quit();
+   adv_video_quit();
+   adv_sprgrp_quit();
+ }
+diff --git a/src/res/adv_res_internal.h b/src/res/adv_res_internal.h
+index 7185127..58a10f2 100644
+--- a/src/res/adv_res_internal.h
++++ b/src/res/adv_res_internal.h
+@@ -6,7 +6,6 @@
+ #include "game/adv_map.h"
+ #include "sprite/adv_sprdef.h"
+ #include "video/adv_video.h"
+-#include <akau.h>
+ #include <sys/stat.h>
+ #include <dirent.h>
+ 
+diff --git a/src/res/adv_res_maps.c b/src/res/adv_res_maps.c
+index b79e5f1..1d289d3 100644
+--- a/src/res/adv_res_maps.c
++++ b/src/res/adv_res_maps.c
+@@ -1,7 +1,6 @@
+ #include "adv_res_internal.h"
+ #include "sprite/adv_sprite.h"
+ #include "sprite/class/adv_sprite_hero.h"
+-#include <pipng.h>
+ 
+ /* map list primitives
+  *****************************************************************************/
+@@ -106,6 +105,7 @@ static void *_loadtilesheet(int id,int colortype) {
+     fprintf(stderr,"ERROR: tilesheet #%d not found\n",id);
+     return 0;
+   }
++  #if 0
+   struct pipng png={0};
+   if (pipng_decode_file(&png,adv_resmgr.tilesheetv[p].path)<0) {
+     fprintf(stderr,"%s:ERROR: %s\n",adv_resmgr.tilesheetv[p].path,png.msg);
+@@ -120,6 +120,8 @@ static void *_loadtilesheet(int id,int colortype) {
+   void *rtn=png.pixels; png.pixels=0;
+   pipng_cleanup(&png);
+   return rtn;
++  #endif
++  return 0;
+ }
+ 
+ /* load graphics for new map
+diff --git a/src/res/adv_res_sounds.c b/src/res/adv_res_sounds.c
+index ae72ef7..b53588c 100644
+--- a/src/res/adv_res_sounds.c
++++ b/src/res/adv_res_sounds.c
+@@ -1,5 +1,4 @@
+ #include "adv_res_internal.h"
+-#include <akau.h>
+ 
+ /* synth instruments
+  *****************************************************************************/
+@@ -49,6 +48,7 @@ static int _adv_load_sound_1(const char *name,int soundid) {
+   int pcmc=adv_file_read(&pcm,path);
+   if (pcmc<0) return -1;
+   if (!pcm) return -1;
++  #if 0 //TODO
+   int waveid=akau_wave_load(pcm,pcmc);
+   free(pcm);
+   if (waveid<0) {
+@@ -61,6 +61,9 @@ static int _adv_load_sound_1(const char *name,int soundid) {
+   }
+   akau_wave_set_name(waveid,name,-1);
+   return 0;
++  #else
++  return -1;
++  #endif
+ }
+  
+ int adv_res_load_sounds() {
+@@ -85,14 +88,14 @@ int adv_res_load_sounds() {
+  *****************************************************************************/
+  
+ int adv_sound(int soundid) {
+-  akau_wave_play(soundid,0x80,0,0);
++  //TODO akau_wave_play(soundid,0x80,0,0);
+   return 0;
+ }
+ 
+ int adv_song(int songid) {
+   if ((songid<0)||(songid>=adv_resmgr.songc)) return 0;
+   if (songid==adv_resmgr.songid) return 0;
+-  akau_song_play(adv_resmgr.songv[songid]);
++  //TODO akau_song_play(adv_resmgr.songv[songid]);
+   adv_resmgr.songid=songid;
+   return 0;
+ }
+@@ -113,6 +116,7 @@ static int adv_resmgr_load_song_1(const char *path,int songid) {
+   char *src=0;
+   int srcc=adv_file_read(&src,path);
+   if ((srcc<0)||!src) return -1;
++  #if 0 //TODO
+   struct akau_song *song=0;
+   int err=akau_song_compile(&song,src,srcc,path);
+   free(src);
+@@ -120,13 +124,16 @@ static int adv_resmgr_load_song_1(const char *path,int songid) {
+   if (adv_resmgr.songv[songid]) akau_song_del(adv_resmgr.songv[songid]);
+   adv_resmgr.songv[songid]=song;
+   return 0;
++  #else
++  return -1;
++  #endif
+ }
+ 
+ /* load songs
+  *****************************************************************************/
+  
+ int adv_res_load_songs() {
+-
++  #if 0 //TODO
+   int waveid;
+   #define SYNTH(tag) if ((waveid=akau_synthesize_and_load( \
+     _adv_synth_##tag,sizeof(_adv_synth_##tag)/sizeof(double),_adv_synth_##tag##_gain,_adv_synth_##tag##_trim \
+@@ -162,6 +169,6 @@ int adv_res_load_songs() {
+     adv_resmgr_load_song_1(subpath,songid);
+   }
+   closedir(dir);
+-  
++  #endif
+   return 0;
+ }
+diff --git a/src/res/adv_resmgr.c b/src/res/adv_resmgr.c
+index cc71380..8984573 100644
+--- a/src/res/adv_resmgr.c
++++ b/src/res/adv_resmgr.c
+@@ -1,5 +1,4 @@
+ #include "adv_res_internal.h"
+-#include <pipng.h>
+ 
+ /* globals
+  *****************************************************************************/
+@@ -277,7 +276,7 @@ void adv_res_quit() {
+     free(adv_resmgr.sprdefv);
+   }
+   if (adv_resmgr.songv) {
+-    while (adv_resmgr.songc-->0) akau_song_del(adv_resmgr.songv[adv_resmgr.songc]);
++    //TODO while (adv_resmgr.songc-->0) akau_song_del(adv_resmgr.songv[adv_resmgr.songc]);
+     free(adv_resmgr.songv);
+   }
+   adv_res_wipe_globals();
+@@ -359,8 +358,10 @@ int adv_res_get_miscimg(void *dstpp,int *w,int *h,int miscimgid) {
+     while (base[basec]) basec++;
+     if (pathc>=sizeof(path)-basec) { closedir(dir); return -1; }
+     memcpy(path+pathc,base,basec+1);
++    #if 0 //TODO
+     struct pipng png={0};
+     if ((pipng_decode_file(&png,path)<0)||(pipng_convert(&png,8,6)<0)) {
++    if (1) {
+       fprintf(stderr,"%s: %s\n",path,png.msg);
+       pipng_cleanup(&png);
+       closedir(dir);
+@@ -372,6 +373,7 @@ int adv_res_get_miscimg(void *dstpp,int *w,int *h,int miscimgid) {
+     *h=png.h;
+     pipng_cleanup(&png);
+     return 0;
++    #endif
+   }
+   closedir(dir);
+   return -1;
+diff --git a/src/video/adv_shaders.c b/src/video/adv_shaders.c
+index 0ed91bf..0f49360 100644
+--- a/src/video/adv_shaders.c
++++ b/src/video/adv_shaders.c
+@@ -73,7 +73,7 @@ static GLuint adv_shaders_compile(const char *refname,const char *vsrc,const cha
+ int adv_shaders_load() {
+ 
+   int screenw=0,screenh=0;
+-  if (pig_get_screen_size(&screenw,&screenh)<0) return -1;
++  //TODO if (pig_get_screen_size(&screenw,&screenh)<0) return -1;
+   if ((screenw<1)||(screenh<1)) return -1;
+   GLfloat nscreenx=-(GLfloat)ADV_SCREEN_W/screenw;
+   GLfloat nscreeny= (GLfloat)ADV_SCREEN_H/screenh;
+diff --git a/src/video/adv_video_global.c b/src/video/adv_video_global.c
+index 8ea3326..4f43017 100644
+--- a/src/video/adv_video_global.c
++++ b/src/video/adv_video_global.c
+@@ -1,7 +1,6 @@
+ #include "adv_video_internal.h"
+ #include "res/adv_res.h"
+ #include "game/adv_map.h"
+-#include <pipng.h>
+ 
+ struct adv_video adv_video={0};
+ 
+@@ -12,8 +11,8 @@ int adv_video_init() {
+   int err;
+   memset(&adv_video,0,sizeof(struct adv_video));
+   
+-  if ((err=pig_init(PIG_API_OPENGLES2))<0) return err;
+-  pig_get_screen_size(&adv_video.screenw,&adv_video.screenh);
++  //TODO if ((err=pig_init(PIG_API_OPENGLES2))<0) return err;
++  //pig_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+   glClearColor(0.0,0.0,0.0,1.0);
+ 
+   if (!(adv_video.bgbuffer=calloc(ADV_SCREEN_W*3,ADV_SCREEN_H))) return err;
+@@ -60,7 +59,7 @@ void adv_video_quit() {
+   glDeleteTextures(1,&adv_video.texture_plainsprites);
+   glDeleteProgram(adv_video.program_splash);
+   glDeleteTextures(1,&adv_video.texture_splash);
+-  pig_quit();
++  //TODO pig_quit();
+   memset(&adv_video,0,sizeof(struct adv_video));
+ }
+ 
+@@ -156,7 +155,7 @@ int adv_video_update() {
+     glDisableVertexAttribArray(ADV_VTXATTR_OPACITY);
+   }
+ 
+-  if ((err=pig_swap_sync())<0) return err;
++  //TODO if ((err=pig_swap_sync())<0) return err;
+   return 0;
+ }
+ 
+diff --git a/src/video/adv_video_internal.h b/src/video/adv_video_internal.h
+index ff3fcfc..70ce440 100644
+--- a/src/video/adv_video_internal.h
++++ b/src/video/adv_video_internal.h
+@@ -4,7 +4,6 @@
+ #include "adv.h"
+ #include "adv_video.h"
+ #include "sprite/adv_sprite.h"
+-#include <pig.h>
+ #include <GLES2/gl2.h>
+ 
+ #define ADV_SPLASH_FADE_TIME 120

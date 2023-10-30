@@ -10,9 +10,9 @@ unsigned char adv_inputs[1+ADV_PLAYER_LIMIT]={0};
  
 int adv_input_init() {
   if (adv_input_read_maps()<0) return -1;
-  if (linput_init(0,1)<0) return -1;
-  if (linput_set_callbacks(0,adv_input_cb_connect,adv_input_cb_disconnect,adv_input_cb_event)<0) return -1;
-  if (linput_scan()<0) return -1;
+  //TODO if (linput_init(0,1)<0) return -1;
+  //if (linput_set_callbacks(0,adv_input_cb_connect,adv_input_cb_disconnect,adv_input_cb_event)<0) return -1;
+  //if (linput_scan()<0) return -1;
   return 0;
 }
 
@@ -31,7 +31,7 @@ void adv_input_quit() {
   }
   memset(&adv_input,0,sizeof(struct adv_input));
   memset(adv_inputs,0,sizeof(adv_inputs));
-  linput_quit();
+  //TODO linput_quit();
 }
 
 /* trivial accessors
@@ -78,7 +78,7 @@ int adv_input_remove_player(int playerid) {
  *****************************************************************************/
  
 int adv_input_update() {
-  if (linput_update(0)<0) return -1;
+  //TODO if (linput_update(0)<0) return -1;
   return 0;
 }
 
@@ -97,7 +97,7 @@ void adv_input_cb_connect(void *userdata,int devid) {
   struct adv_controller *controller=0;
   if (adv_controller_new(&controller)<0) return;
   if (adv_controller_setup(controller,devid)<0) { 
-    printf("Unable to configure input device '%s'.\n",linput_device_get_name(devid));
+    //TODO printf("Unable to configure input device '%s'.\n",linput_device_get_name(devid));
     adv_controller_del(controller); 
     return; 
   }

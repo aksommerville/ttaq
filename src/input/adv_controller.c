@@ -95,6 +95,7 @@ int adv_controller_setup(struct adv_controller *controller,int devid) {
   if (!controller) return -1;
   controller->devid=devid;
   
+  #if 0 // TODO
   /* Find the best-matching inmap. */
   struct linput_device_layout layout={0};
   if (linput_device_get_layout(&layout,devid)<0) return -1;
@@ -138,6 +139,7 @@ int adv_controller_setup(struct adv_controller *controller,int devid) {
     if (adv_controller_keymap_insert(controller,p,inmap->keymapv[i].code)<0) return -1;
     controller->keymapv[p]=inmap->keymapv[i];
   }
+  #endif
   
   return 0;
 }

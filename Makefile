@@ -13,6 +13,26 @@ AS:=gcc -xassembler-with-cpp -c -O2
 LD:=gcc -L/opt/vc/lib
 LDPOST:=-lpig-static -lpipng-static -llinput-static -lGLESv2 -lz -lakau-static -lasound
 
+# Hello user!
+# Please pick the appropriate configuration and enable it like so:
+#   ifeq (old pi with bcm,old pi with bcm) # <-- same string twice = enabled
+
+ifeq (old pi with bcm,)
+  CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include
+  AS:=gcc -xassembler-with-cpp -c -O2
+  LD:=gcc -L/opt/vc/lib
+  LDPOST:=-lpig-static -lpipng-static -llinput-static -lGLESv2 -lz -lakau-static -lasound
+  
+else ifeq (linux auto,linux auto)
+  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit
+  AS:=gcc -xassembler-with-cpp -c -O3
+  LD:=gcc
+  LDPOST:=-lm -lz -lasound -lGL
+  
+else
+  $(error Please select configuration. Edit Makefile)
+endif
+
 #------------------------------------------------------------------------------
 # Build programs.
 
@@ -33,9 +53,9 @@ ifneq (,$(strip $(GAME)))
   all:$(GAME)
   OFILES_GAME:=$(filter-out mid/editor/%,$(OFILES_ALL))
   $(GAME):$(OFILES_GAME);$(PRECMD) $(LD) -o $@ $^ $(LDPOST)
-  test:$(GAME);mkdir -p ~/.ttaq ; cp etc/input ~/.ttaq/input ; $(GAME)
+  run:$(GAME);mkdir -p ~/.ttaq ; cp etc/input ~/.ttaq/input ; $(GAME)
 else
-  test:;echo "Not building game" ; exit 1
+  run:;echo "Not building game" ; exit 1
 endif
 
 #------------------------------------------------------------------------------

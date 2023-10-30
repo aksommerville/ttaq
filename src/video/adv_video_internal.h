@@ -4,7 +4,6 @@
 #include "adv.h"
 #include "adv_video.h"
 #include "sprite/adv_sprite.h"
-#include <pig.h>
 #include <GLES2/gl2.h>
 
 #define ADV_SPLASH_FADE_TIME 120
