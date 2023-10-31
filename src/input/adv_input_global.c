@@ -10,9 +10,6 @@ unsigned char adv_inputs[1+ADV_PLAYER_LIMIT]={0};
  
 int adv_input_init() {
   if (adv_input_read_maps()<0) return -1;
-  //TODO if (linput_init(0,1)<0) return -1;
-  //if (linput_set_callbacks(0,adv_input_cb_connect,adv_input_cb_disconnect,adv_input_cb_event)<0) return -1;
-  //if (linput_scan()<0) return -1;
   return 0;
 }
 
@@ -31,11 +28,14 @@ void adv_input_quit() {
   }
   memset(&adv_input,0,sizeof(struct adv_input));
   memset(adv_inputs,0,sizeof(adv_inputs));
-  //TODO linput_quit();
 }
 
 /* trivial accessors
  *****************************************************************************/
+ 
+void adv_input_request_quit() {
+  adv_input.quit_requested=1;
+}
 
 int adv_input_quit_requested() {
   int rtn=adv_input.quit_requested;
@@ -85,29 +85,31 @@ int adv_input_update() {
 /* connect
  *****************************************************************************/
  
-void adv_input_cb_connect(void *userdata,int devid) {
+int adv_input_connect(int devid,int vid,int pid,const char *name,int namec) {
+  if (!name) namec=0; else if (namec<0) { namec=0; while (name[namec]) namec++; }
   if (adv_input.controllerc>=adv_input.controllera) {
     int na=adv_input.controllera+4;
-    if (na>INT_MAX/sizeof(void*)) return;
+    if (na>INT_MAX/sizeof(void*)) return -1;
     void *nv=realloc(adv_input.controllerv,sizeof(void*)*na);
-    if (!nv) return;
+    if (!nv) return -1;
     adv_input.controllerv=nv;
     adv_input.controllera=na;
   }
   struct adv_controller *controller=0;
-  if (adv_controller_new(&controller)<0) return;
-  if (adv_controller_setup(controller,devid)<0) { 
-    //TODO printf("Unable to configure input device '%s'.\n",linput_device_get_name(devid));
+  if (adv_controller_new(&controller)<0) return -1;
+  if (adv_controller_setup(controller,devid,vid,pid,name,namec)<0) { 
+    fprintf(stderr,"Unable to configure input device '%.*s'.\n",namec,name);
     adv_controller_del(controller); 
-    return; 
+    return -1;
   }
   adv_input.controllerv[adv_input.controllerc++]=controller;
+  return 0;
 }
 
 /* disconnect
  *****************************************************************************/
  
-void adv_input_cb_disconnect(void *userdata,int devid) {
+void adv_input_disconnect(int devid) {
   int i; for (i=0;i<adv_input.controllerc;i++) if (adv_input.controllerv[i]->devid==devid) {
     struct adv_controller *controller=adv_input.controllerv[i];
     if ((controller->playerid>=1)&&(controller->playerid<=ADV_PLAYER_LIMIT)) {
@@ -131,14 +133,24 @@ void adv_input_cb_disconnect(void *userdata,int devid) {
 /* event
  *****************************************************************************/
  
-void adv_input_cb_event(void *userdata,int devid,int type,int code,int value) {
+int adv_input_event(int devid,int btnid,int value) {
+
+  // 2023-10-30: We used to be hard-coded for evdev, and it's hard to break that dependency altogether.
+  // The only thing we should get that isn't evdev are keyboard events from glx, which it rephrases as USB-HID usage codes.
+  int type=(btnid>>16)&0xffff;
+  int code=btnid&0xffff;
+  if (type==7) { // USB-HID. Luckily, Linux doesn't use type 7.
+    type=EV_KEY;
+    code=btnid;
+  }
+  //fprintf(stderr,"%s %d.%d=%d type=0x%x code=0x%x controllerc=%d\n",__func__,devid,btnid,value,type,code,adv_input.controllerc);
 
   // One-off global events.
   if ((type==EV_KEY)&&(value==1)) {
     int useractionp=adv_useraction_search(code);
     if (useractionp>=0) {
       adv_input_useraction(adv_input.useractionv[useractionp].useraction);
-      return;
+      return 0;
     }
   }
   
@@ -146,8 +158,10 @@ void adv_input_cb_event(void *userdata,int devid,int type,int code,int value) {
   int i; for (i=0;i<adv_input.controllerc;i++) if (adv_input.controllerv[i]->devid==devid) {
     struct adv_controller *controller=adv_input.controllerv[i];
     adv_controller_event(controller,type,code,value);
-    return;
+    return 0;
   }
+  
+  return 0;
 }
 
 /* useraction list
@@ -335,4 +349,14 @@ int adv_input_read_maps() {
   if (err<0) return err;
   printf("Loaded input maps from '%s'.\n",path);
   return 0;
+}
+
+/* 2023-10-30: New regime, where drivers call us to start reception.
+ **************************************************************************/
+ 
+static int adv_input_devid_next_=1;
+
+int adv_input_devid_next() {
+  if (adv_input_devid_next_==INT_MAX) return -1;
+  return adv_input_devid_next_++;
 }

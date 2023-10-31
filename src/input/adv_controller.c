@@ -91,17 +91,14 @@ int adv_controller_keymap_insert(struct adv_controller *controller,int p,int cod
 /* setup
  *****************************************************************************/
  
-int adv_controller_setup(struct adv_controller *controller,int devid) {
+int adv_controller_setup(struct adv_controller *controller,int devid,int vid,int pid,const char *name,int namec) {
   if (!controller) return -1;
+  if (!name||(namec<0)) namec=0;
   controller->devid=devid;
   
-  #if 0 // TODO
-  /* Find the best-matching inmap. */
-  struct linput_device_layout layout={0};
-  if (linput_device_get_layout(&layout,devid)<0) return -1;
   int bestinmap=-1,score=0,i;
   for (i=0;i<adv_input.inmapc;i++) {
-    int qscore=adv_inmap_compare(adv_input.inmapv[i],&layout,devid);
+    int qscore=adv_inmap_compare(adv_input.inmapv[i],vid,pid,name,namec,devid);
     if (qscore>score) {
       bestinmap=i;
       score=qscore;
@@ -113,13 +110,14 @@ int adv_controller_setup(struct adv_controller *controller,int devid) {
   /* Apply inmap to controller. */
   struct adv_inmap *inmap=adv_input.inmapv[bestinmap];
   for (i=0;i<inmap->absmapc;i++) {
-    if (!linput_device_layout_has_abs(&layout,inmap->absmapv[i].code)) continue;
+    //TODO if (!linput_device_layout_has_abs(&layout,inmap->absmapv[i].code)) continue;
     int p=controller->absmapc; // controller and layout both sort by code, so we don't need to search here
     if (adv_controller_absmap_insert(controller,p,inmap->absmapv[i].code)<0) return -1;
     struct adv_absmap *m=controller->absmapv+p;
     *m=inmap->absmapv[i];
-    int lo=layout.absinfo[m->code].minimum;
-    int hi=layout.absinfo[m->code].maximum;
+    //TODO We probably do need to query input devices; can't just make shit up for the abs ranges.
+    int lo=-32767;//layout.absinfo[m->code].minimum;
+    int hi=32768;//layout.absinfo[m->code].maximum;
     if (lo<-32768) lo=-32768;
     if (hi>32767) hi=32767;
     if (lo>=hi) { lo=-32768; hi=32767; }
@@ -134,12 +132,11 @@ int adv_controller_setup(struct adv_controller *controller,int devid) {
     }
   }
   for (i=0;i<inmap->keymapc;i++) {
-    if (!linput_device_layout_has_key(&layout,inmap->keymapv[i].code)) continue;
+    //TODO if (!linput_device_layout_has_key(&layout,inmap->keymapv[i].code)) continue;
     int p=controller->keymapc;
     if (adv_controller_keymap_insert(controller,p,inmap->keymapv[i].code)<0) return -1;
     controller->keymapv[p]=inmap->keymapv[i];
   }
-  #endif
   
   return 0;
 }

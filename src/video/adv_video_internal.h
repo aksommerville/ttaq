@@ -4,7 +4,25 @@
 #include "adv.h"
 #include "adv_video.h"
 #include "sprite/adv_sprite.h"
-#include <GLES2/gl2.h>
+#define GL_GLEXT_PROTOTYPES 1
+#include <GL/gl.h>
+#include <GL/glext.h>
+
+#if USE_glx
+  #include "opt/glx/eh_glx.h"
+  #define HAVE_VIDEO_BACKEND 1
+#endif
+#if USE_drm
+  #include "opt/drm/drm.h"
+  #define HAVE_VIDEO_BACKEND 1
+#endif
+#if USE_bcm
+  #include "opt/bcm/bcm.h"
+  #define HAVE_VIDEO_BACKEND 1
+#endif
+#ifndef HAVE_VIDEO_BACKEND
+  #error "Please enable a video driver: glx drm bcm. See Makefile."
+#endif
 
 #define ADV_SPLASH_FADE_TIME 120
 

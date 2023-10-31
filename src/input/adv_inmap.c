@@ -162,31 +162,32 @@ static int adv_inmap_compare_name(const char *pat,int patc,const char *name,int 
 /* compare device, outer
  *****************************************************************************/
 
-#if 0 //TODO 
-int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid) {
-  if (!inmap||!layout) return 0;
+int adv_inmap_compare(struct adv_inmap *inmap,int vid,int pid,const char *name,int namec,int devid) {
+  if (!inmap) return 0;
+  if (!name||(namec<0)) namec=0;
   int score=0;
   
   // (bustype,vendor,product) must match if specified. One point for bus, ten each for vendor and product
-  if (inmap->bustype) {
-    if (inmap->bustype!=linput_device_get_bustype(devid)) return 0;
-    score++;
-  }
+  //if (inmap->bustype) {
+  //  if (inmap->bustype!=linput_device_get_bustype(devid)) return 0;
+  //  score++;
+  //}
   if (inmap->vendor) {
-    if (inmap->vendor!=linput_device_get_vendor(devid)) return 0;
+    if (inmap->vendor!=vid) return 0;
     score+=10;
   }
   if (inmap->product) {
-    if (inmap->product!=linput_device_get_product(devid)) return 0;
+    if (inmap->product!=pid) return 0;
     score+=10;
   }
   
   // Name must match always. One point for wildcard matches, ten points for verbatim matches.
-  int add=adv_inmap_compare_name(inmap->name,inmap->namec,linput_device_get_name(devid),-1);
+  int add=adv_inmap_compare_name(inmap->name,inmap->namec,name,namec);
   if (add<1) return 0;
   score+=(add>1)?10:1;
   
   // The five critical buttons must exist. One point for every output button (critical and optional).
+  #if 0 // TODO I'm not setting up to query device capabilities. ugh... should we?
   int i;
   unsigned char havebtn=0;
   for (i=0;i<inmap->absmapc;i++) {
@@ -200,10 +201,10 @@ int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layou
   }
   if ((havebtn&ADV_BTNID_CRITICAL)!=ADV_BTNID_CRITICAL) return 0;
   for (i=0x80;i;i>>=1) if (havebtn&i) score++;
+  #endif
   
   return score;
 }
-#endif
 
 /* evaluate header
  *****************************************************************************/
@@ -342,7 +343,10 @@ int adv_inmap_eval_argument(struct adv_inmap *inmap,const char *src,int srcc,con
       return -1;
     }
     int code=adv_keycode_eval(wordv[0],lenv[0]);
-    if ((code>=0)&&(code<=KEY_MAX)) { // key
+    if (
+      ((code>=0)&&(code<=KEY_MAX))||
+      ((code>=0x00070000)&&(code<0x00080000))
+    ) { // key
       int p=adv_inmap_keymap_search(inmap,code);
       if (p>=0) {
         if (refname) fprintf(stderr,"%s:%d: button '%.*s' is already assigned\n",refname,lineno,lenv[0],wordv[0]);

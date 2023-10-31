@@ -34,6 +34,7 @@ int adv_input_init();
 void adv_input_quit();
 int adv_input_update();
 
+void adv_input_request_quit(); // defers
 int adv_input_quit_requested();
 int adv_input_get_pause();
 int adv_input_set_pause(int pause);
@@ -50,5 +51,14 @@ int adv_bus_eval(const char *src,int srcc);
 int adv_useraction_eval(const char *src,int srcc);
 int adv_btnid_eval(const char *src,int srcc);
 int adv_uint_eval(const char *src,int srcc);
+
+/* For drivers.
+ *********************************************************/
+
+int adv_input_devid_next();
+
+int adv_input_connect(int devid,int vid,int pid,const char *name,int namec);
+void adv_input_disconnect(int devid);
+int adv_input_event(int devid,int btnid,int value);
 
 #endif

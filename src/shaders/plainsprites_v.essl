@@ -1,5 +1,3 @@
-#version 100
-
 uniform vec2 screenposition; // normalized device space
 uniform vec2 screensize;     // normalized device space
 uniform vec2 gamescreensize; // game space

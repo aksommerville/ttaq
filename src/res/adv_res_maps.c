@@ -1,6 +1,7 @@
 #include "adv_res_internal.h"
 #include "sprite/adv_sprite.h"
 #include "sprite/class/adv_sprite_hero.h"
+#include "png/png.h"
 
 /* map list primitives
  *****************************************************************************/
@@ -105,23 +106,27 @@ static void *_loadtilesheet(int id,int colortype) {
     fprintf(stderr,"ERROR: tilesheet #%d not found\n",id);
     return 0;
   }
-  #if 0
-  struct pipng png={0};
-  if (pipng_decode_file(&png,adv_resmgr.tilesheetv[p].path)<0) {
-    fprintf(stderr,"%s:ERROR: %s\n",adv_resmgr.tilesheetv[p].path,png.msg);
-    pipng_cleanup(&png);
+  const char *path=adv_resmgr.tilesheetv[p].path;
+  void *serial=0;
+  int serialc=adv_file_read(&serial,path);
+  if (serialc<0) {
+    fprintf(stderr,"%s: Failed to read file\n",path);
     return 0;
   }
-  if (pipng_convert(&png,8,colortype)<0) {
-    fprintf(stderr,"%s:ERROR: %s\n",adv_resmgr.tilesheetv[p].path,png.msg);
-    pipng_cleanup(&png);
+  struct png_image *image=png_decode(serial,serialc);
+  free(serial);
+  // TODO: 2023-10-30: As I found this code, it converted to the desired colortype rather than asserting.
+  // Does it matter? Is there an image we might load both with and without alpha?
+  if (!image||(image->depth!=8)||(image->colortype!=colortype)) {
+    if (image) fprintf(stderr,"%s: Expected (depth,colortype)=(8,%d), found (%d,%d)\n",path,colortype,image->depth,image->colortype);
+    else fprintf(stderr,"%s: Failed to decode %d bytes of PNG\n",path,serialc);
+    png_image_del(image);
     return 0;
   }
-  void *rtn=png.pixels; png.pixels=0;
-  pipng_cleanup(&png);
+  void *rtn=image->pixels;
+  image->pixels=0;
+  png_image_del(image);
   return rtn;
-  #endif
-  return 0;
 }
 
 /* load graphics for new map

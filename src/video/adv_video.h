@@ -1,3 +1,8 @@
+/* adv_video.h
+ * This unit is responsible for the high-level rendering, and for managing the OpenGL relationship.
+ * We do not create the OpenGL context or talk to the OS, but we do bootstrap whatever opt unit handles those.
+ */
+
 #ifndef ADV_VIDEO_H
 #define ADV_VIDEO_H
 

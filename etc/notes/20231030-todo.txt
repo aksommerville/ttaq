@@ -1,0 +1,41 @@
+src/sprite/class/adv_sprite_hero.c:462:  //TODO Permit switching when all heroes have a player. First player holds SWITCH, second player triggers it.
+src/sprite/class/adv_sprite_hero.c:571:  if (!SPR->weapon) SPR->weapon=spr->sprdefid;//TODO: assign weapon
+src/sprite/class/adv_sprite_hero.c:680:  //TODO We ought to ensure that no collision exists.
+src/sprite/adv_sprite_physics.c:65:      //TODO push sprites
+src/video/adv_video_global.c:14:  //TODO if ((err=pig_init(PIG_API_OPENGLES2))<0) return err;
+src/video/adv_video_global.c:62:  //TODO pig_quit();
+src/video/adv_video_global.c:158:  //TODO if ((err=pig_swap_sync())<0) return err;
+src/video/adv_shaders.c:6: * TODO: Look into precompiling the shaders. Not a big deal.
+src/video/adv_shaders.c:76:  //TODO if (pig_get_screen_size(&screenw,&screenh)<0) return -1;
+src/input/adv_controller.c:98:  #if 0 // TODO
+src/input/adv_inmap.c:165:#if 0 //TODO 
+src/input/adv_input_global.c:13:  //TODO if (linput_init(0,1)<0) return -1;
+src/input/adv_input_global.c:34:  //TODO linput_quit();
+src/input/adv_input_global.c:81:  //TODO if (linput_update(0)<0) return -1;
+src/input/adv_input_global.c:100:    //TODO printf("Unable to configure input device '%s'.\n",linput_device_get_name(devid));
+src/input/adv_input_internal.h:80://TODO int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid); // => score
+src/res/adv_res.h:49://TODO way more sounds
+src/res/adv_resmgr.c:279:    //TODO while (adv_resmgr.songc-->0) akau_song_del(adv_resmgr.songv[adv_resmgr.songc]);
+src/res/adv_resmgr.c:334: * TODO: It would probably be wise to read the directory only once, at startup, and store all the relevant paths.
+src/res/adv_resmgr.c:361:    #if 0 //TODO
+src/res/adv_res_sounds.c:51:  #if 0 //TODO
+src/res/adv_res_sounds.c:91:  //TODO akau_wave_play(soundid,0x80,0,0);
+src/res/adv_res_sounds.c:98:  //TODO akau_song_play(adv_resmgr.songv[songid]);
+src/res/adv_res_sounds.c:119:  #if 0 //TODO
+src/res/adv_res_sounds.c:136:  #if 0 //TODO
+src/main/adv_main.c:50:  //TODO if (akau_init(44100)<0) return -1;
+src/main/adv_main.c:72:  //TODO akau_quit();
+src/shaders/plainsprites_v.essl:16:  gl_PointSize=32.0;//TODO pass sprite size as a uniform?
+
+[x] Why aren't sprites appearing? ...GL_POINT_SPRITE+GL_PROGRAM_POINT_SIZE
+[ ] Audio drivers.
+[ ] Synthesizer. How much can we bear to redo? Drop all the sound effects? I don't like having the sample rate fixed at build time.
+[x] glx: Deliver events. We're probably not expecting close and resize, those will take some creativity.
+[ ] glx: Tolerate window resize.
+[ ] Add a useraction to toggle fullscreen.
+[ ] evdev driver.
+[ ] drm driver.
+[ ] bcm driver.
+[ ] glx: Window manager icon.
+[ ] Update README.
+[ ] Make a page on Itch.

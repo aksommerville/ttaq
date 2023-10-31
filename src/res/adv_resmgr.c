@@ -1,4 +1,5 @@
 #include "adv_res_internal.h"
+#include "png/png.h"
 
 /* globals
  *****************************************************************************/
@@ -358,22 +359,25 @@ int adv_res_get_miscimg(void *dstpp,int *w,int *h,int miscimgid) {
     while (base[basec]) basec++;
     if (pathc>=sizeof(path)-basec) { closedir(dir); return -1; }
     memcpy(path+pathc,base,basec+1);
-    #if 0 //TODO
-    struct pipng png={0};
-    if ((pipng_decode_file(&png,path)<0)||(pipng_convert(&png,8,6)<0)) {
-    if (1) {
-      fprintf(stderr,"%s: %s\n",path,png.msg);
-      pipng_cleanup(&png);
-      closedir(dir);
+    
+    closedir(dir);
+    void *serial=0;
+    int serialc=adv_file_read(&serial,path);
+    if (serialc<0) return -1;
+    struct png_image *image=png_decode(serial,serialc);
+    free(serial);
+    if (!image) return -1;
+    if ((image->depth!=8)||(image->colortype!=6)) {
+      fprintf(stderr,"%s: Must be 32-bit RGBA (have depth=%d colortype=%d)\n",path,image->depth,image->colortype);
+      png_image_del(image);
       return -1;
     }
-    closedir(dir);
-    *(void**)dstpp=png.pixels; png.pixels=0;
-    *w=png.w; 
-    *h=png.h;
-    pipng_cleanup(&png);
+    *(void**)dstpp=image->pixels;
+    image->pixels=0;
+    *w=image->w; 
+    *h=image->h;
+    png_image_del(image);
     return 0;
-    #endif
   }
   closedir(dir);
   return -1;

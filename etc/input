@@ -22,6 +22,10 @@ global KEY_ESC      QUIT
 global KEY_P        PAUSE
 global KEY_F1       SAVE
 
+global 0x00070029 QUIT
+global 0x00070013 PAUSE
+global 0x0007003a SAVE
+
 #------------------------------------------------------------------------------
 # 
 # Device rules are described in blocks:
@@ -101,6 +105,16 @@ device
   KEY_TAB       SWITCH
   KEY_BACKSPACE DETACH
   KEY_HOME      FOLLOWME
+  
+  # Keyboard, if reported with USB-HID Usage Codes.
+  KEY:0x00070052 UP
+  KEY:0x00070051 DOWN
+  KEY:0x00070050 LEFT
+  KEY:0x0007004f RIGHT
+  KEY:0x0007002c ACTION
+  KEY:0x0007002b SWITCH
+  KEY:0x0007002a DETACH
+  KEY:0x0007004a FOLLOWME
   
 end
 

@@ -48,22 +48,9 @@ static int _adv_load_sound_1(const char *name,int soundid) {
   int pcmc=adv_file_read(&pcm,path);
   if (pcmc<0) return -1;
   if (!pcm) return -1;
-  #if 0 //TODO
-  int waveid=akau_wave_load(pcm,pcmc);
-  free(pcm);
-  if (waveid<0) {
-    fprintf(stderr,"%s: failed to load sound effect\n",path);
-    return -1;
-  }
-  if (waveid!=soundid) {
-    fprintf(stderr,"%s: did not acquire wave id %d from akau as expected (got %d)\n",path,soundid,waveid);
-    return -1;
-  }
-  akau_wave_set_name(waveid,name,-1);
+  //TODO Load PCM sound effect.
+  fprintf(stderr,"%s:%d:TODO: Load sound %d (%s) from %s, size=%d\n",__FILE__,__LINE__,soundid,name,path,pcmc);
   return 0;
-  #else
-  return -1;
-  #endif
 }
  
 int adv_res_load_sounds() {

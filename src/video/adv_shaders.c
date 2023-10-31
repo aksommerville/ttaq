@@ -23,9 +23,13 @@ static GLuint adv_shaders_compile(const char *refname,const char *vsrc,const cha
   GLuint program=glCreateProgram();
   if (!program) return 0;
 
-  glShaderSource(vshader,1,&vsrc,0);
+  const char *versionstr="#version 120\n";//TODO should be 100 for old raspi
+  const char *combinedsrc[2]={versionstr};
+  combinedsrc[1]=vsrc;
+  glShaderSource(vshader,2,combinedsrc,0);
   glCompileShader(vshader);
-  glShaderSource(fshader,1,&fsrc,0);
+  combinedsrc[1]=fsrc;
+  glShaderSource(fshader,2,combinedsrc,0);
   glCompileShader(fshader);
   glAttachShader(program,vshader);
   glAttachShader(program,fshader);
@@ -72,8 +76,7 @@ static GLuint adv_shaders_compile(const char *refname,const char *vsrc,const cha
 
 int adv_shaders_load() {
 
-  int screenw=0,screenh=0;
-  //TODO if (pig_get_screen_size(&screenw,&screenh)<0) return -1;
+  int screenw=adv_video.screenw,screenh=adv_video.screenh;
   if ((screenw<1)||(screenh<1)) return -1;
   GLfloat nscreenx=-(GLfloat)ADV_SCREEN_W/screenw;
   GLfloat nscreeny= (GLfloat)ADV_SCREEN_H/screenh;

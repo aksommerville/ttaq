@@ -50,9 +50,9 @@ static int adv_init(int argc,char **argv) {
   //TODO if (akau_init(44100)<0) return -1;
 
   if ((err=adv_sprgrp_init())<0) return err;
+  if ((err=adv_input_init())<0) return err;
   if ((err=adv_video_init())<0) return err;
   if ((err=adv_res_init((argc>=1)?argv[0]:""))<0) return err;
-  if ((err=adv_input_init())<0) return err;
   
   if ((err=adv_input_map_useraction(KEY_ESC,ADV_USERACTION_QUIT))<0) return err;
   if ((err=adv_input_map_useraction(KEY_P,ADV_USERACTION_PAUSE))<0) return err;
@@ -132,7 +132,10 @@ int main(int argc,char **argv) {
   int err=0;
   int64_t starttime=0,endtime=0,framec=0;
 
-  if ((err=adv_init(argc,argv))<0) goto _done_;
+  if ((err=adv_init(argc,argv))<0) {
+    fprintf(stderr,"%s: adv_init failed\n",argv[0]);
+    goto _done_;
+  }
 
   starttime=adv_get_time();
   while ((err=adv_update())>0) framec++;
@@ -144,9 +147,11 @@ int main(int argc,char **argv) {
       int seconds=(endtime-starttime)/1000000;
       int minutes=seconds/60; seconds%=60;
       int hours=minutes/60; minutes%=60;
-      printf("Play time %d:%02d:%02d.%06d\n",hours,minutes,seconds,useconds);
-      printf("Average frame rate %.2f Hz\n",(framec*1000000.0)/(endtime-starttime));
+      fprintf(stderr,"Play time %d:%02d:%02d.%06d\n",hours,minutes,seconds,useconds);
+      fprintf(stderr,"Average frame rate %.2f Hz\n",(framec*1000000.0)/(endtime-starttime));
     }
+  } else if (err<0) {
+    fprintf(stderr,"%s: adv_update failed\n",argv[0]);
   }
   
  _done_:

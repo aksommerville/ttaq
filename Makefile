@@ -18,16 +18,25 @@ LDPOST:=-lpig-static -lpipng-static -llinput-static -lGLESv2 -lz -lakau-static -
 #   ifeq (old pi with bcm,old pi with bcm) # <-- same string twice = enabled
 
 ifeq (old pi with bcm,)
-  CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include
+  OPT_ENABLE:=bcm alsa evdev
+  CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include $(foreach U,$(OPT_ENABLE),-DUSE_$U)
   AS:=gcc -xassembler-with-cpp -c -O2
   LD:=gcc -L/opt/vc/lib
-  LDPOST:=-lpig-static -lpipng-static -llinput-static -lGLESv2 -lz -lakau-static -lasound
+  LDPOST:=-lGLESv2 -lz -lasound
   
-else ifeq (linux auto,linux auto)
-  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit
+else ifeq (linux desktop,linux desktop)
+  OPT_ENABLE:=glx pulse evdev
+  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit $(foreach U,$(OPT_ENABLE),-DUSE_$U)
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
-  LDPOST:=-lm -lz -lasound -lGL
+  LDPOST:=-lm -lz -lpulse-simple -lGL -lGLX -lX11
+  
+else ifeq (linux guiless,)
+  OPT_ENABLE:=drm alsa evdev
+  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U)
+  AS:=gcc -xassembler-with-cpp -c -O3
+  LD:=gcc
+  LDPOST:=-lm -lz -lasound -lGL -ldrm
   
 else
   $(error Please select configuration. Edit Makefile)

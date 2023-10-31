@@ -11,11 +11,29 @@ int adv_video_init() {
   int err;
   memset(&adv_video,0,sizeof(struct adv_video));
   
-  //TODO if ((err=pig_init(PIG_API_OPENGLES2))<0) return err;
-  //pig_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+  #if USE_glx
+    if (glx_init()<0) {
+      fprintf(stderr,"glx_init failed\n");
+      return -1;
+    }
+    glx_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+  #elif USE_drm
+    if (drm_init()<0) {
+      fprintf(stderr,"drm_init failed\n");
+      return -1;
+    }
+    drm_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+  #elif USE_bcm
+    if (bcm_init()<0) {
+      fprintf(stderr,"bcm_init failed\n");
+      return -1;
+    }
+    bcm_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+  #endif
+  
   glClearColor(0.0,0.0,0.0,1.0);
 
-  if (!(adv_video.bgbuffer=calloc(ADV_SCREEN_W*3,ADV_SCREEN_H))) return err;
+  if (!(adv_video.bgbuffer=calloc(ADV_SCREEN_W*3,ADV_SCREEN_H))) return -1;
 
   if ((err=adv_shaders_load())<0) return err;
 
@@ -59,7 +77,15 @@ void adv_video_quit() {
   glDeleteTextures(1,&adv_video.texture_plainsprites);
   glDeleteProgram(adv_video.program_splash);
   glDeleteTextures(1,&adv_video.texture_splash);
-  //TODO pig_quit();
+  
+  #if USE_glx
+    glx_quit();
+  #elif USE_drm
+    drm_quit();
+  #elif USE_bcm
+    bcm_quit();
+  #endif
+  
   memset(&adv_video,0,sizeof(struct adv_video));
 }
 
@@ -80,6 +106,16 @@ int adv_video_lights_out(int do_effect,int lampx,int lampy) {
 int adv_video_update() {
   int err,i;
   static const GLbyte limit_vtxv[8]={0,0, 1,0, 0,1, 1,1};
+  
+  #if USE_glx
+    if (glx_update()<0) return err;
+    if (glx_begin()<0) return err;
+  #elif USE_drm
+    if (drm_begin()<0) return err;
+  #elif USE_bcm
+    if (bcm_begin()<0) return err;
+  #endif
+  
   glClear(GL_COLOR_BUFFER_BIT);
 
   glEnable(GL_SCISSOR_TEST);
@@ -105,6 +141,8 @@ int adv_video_update() {
   if (adv_sprgrp_visible&&(adv_sprgrp_visible->sprc>0)) {
     adv_sprgrp_sort_by_depth(adv_sprgrp_visible);
     glEnable(GL_BLEND);
+    glEnable(GL_POINT_SPRITE);
+    glEnable(GL_PROGRAM_POINT_SIZE);
     glUseProgram(adv_video.program_plainsprites);
     glBindTexture(GL_TEXTURE_2D,adv_video.texture_plainsprites);
     glEnableVertexAttribArray(ADV_VTXATTR_POSITION);
@@ -155,7 +193,14 @@ int adv_video_update() {
     glDisableVertexAttribArray(ADV_VTXATTR_OPACITY);
   }
 
-  //TODO if ((err=pig_swap_sync())<0) return err;
+  #if USE_glx
+    if (glx_end()<0) return err;
+  #elif USE_drm
+    if (drm_end()<0) return err;
+  #elif USE_bcm
+    if (bcm_end()<0) return err;
+  #endif
+  
   return 0;
 }
 

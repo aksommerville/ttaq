@@ -52,10 +52,6 @@ extern struct adv_input {
   
 } adv_input;
 
-void adv_input_cb_connect(void *userdata,int devid);
-void adv_input_cb_disconnect(void *userdata,int devid);
-void adv_input_cb_event(void *userdata,int devid,int type,int code,int value);
-
 int adv_useraction_search(int keycode);
 int adv_useraction_insert(int p,int keycode,int useraction);
 
@@ -63,7 +59,7 @@ int adv_input_read_maps();
 
 void adv_controller_del(struct adv_controller *controller);
 int adv_controller_new(struct adv_controller **dst);
-int adv_controller_setup(struct adv_controller *controller,int devid);
+int adv_controller_setup(struct adv_controller *controller,int devid,int vid,int pid,const char *name,int namec);
 int adv_controller_event(struct adv_controller *controller,int type,int code,int value);
 int adv_controller_absmap_search(struct adv_controller *controller,int code);
 int adv_controller_absmap_insert(struct adv_controller *controller,int p,int code);
@@ -77,7 +73,7 @@ int adv_inmap_absmap_search(struct adv_inmap *inmap,int code);
 int adv_inmap_absmap_insert(struct adv_inmap *inmap,int p,int code);
 int adv_inmap_keymap_search(struct adv_inmap *inmap,int code);
 int adv_inmap_keymap_insert(struct adv_inmap *inmap,int p,int code);
-//TODO int adv_inmap_compare(struct adv_inmap *inmap,struct linput_device_layout *layout,int devid); // => score
+int adv_inmap_compare(struct adv_inmap *inmap,int vid,int pid,const char *name,int namec,int devid); // => score
 #define ADV_INMAP_SCORE_BEST 39
 #define ADV_BTNID_CRITICAL (ADV_BTNID_UP|ADV_BTNID_DOWN|ADV_BTNID_LEFT|ADV_BTNID_RIGHT|ADV_BTNID_ACTION)
 int adv_inmap_eval_header(struct adv_inmap *inmap,const char *src,int srcc,const char *refname,int lineno);

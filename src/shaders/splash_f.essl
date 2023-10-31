@@ -1,5 +1,3 @@
-#version 100
-
 uniform sampler2D sampler;
 
 varying vec2 ftexposition;

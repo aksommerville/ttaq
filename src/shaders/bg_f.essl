@@ -1,5 +1,3 @@
-#version 100
-
 uniform sampler2D sampler;
 uniform float lights_out;
 uniform vec2 lightpos;
