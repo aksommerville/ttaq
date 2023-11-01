@@ -46,10 +46,11 @@ void adv_res_get_background_palette(void **bg);
 #define ADV_SOUND_KICK          11
 #define ADV_SOUND_RIDE          12
 #define ADV_SOUND_SNARE         13
-//TODO way more sounds
-int adv_sound(int soundid);
+#define ADV_SOUND_MENUYES       14
+#define ADV_SOUND_MENUNO        15
 
-int adv_song(int songid);
+int ttaq_audio_play_sound(int soundid);
+int ttaq_audio_play_song(int songid);
 
 /* "miscellaneous images" are loaded from disk per request.
  * Output is always RGBA; we convert if necessary.

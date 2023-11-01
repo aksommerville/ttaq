@@ -90,11 +90,11 @@ static int _adv_gadget_update(struct adv_sprite *spr) {
     int row; for (row=y/ADV_TILE_H;row<=(y+h-1)/ADV_TILE_H;row++) {
       switch (adv_map_cell_is_solid(adv_map,col,row,1,0)) {
         case 1: { // solid, unlatchable
-            adv_sound(ADV_SOUND_GADGETNO);
+            ttaq_audio_play_sound(ADV_SOUND_GADGETNO);
             SPR->returning=1;
           } return 0;
         case 2: { // solid, latchable
-            adv_sound(ADV_SOUND_GADGETYES);
+            ttaq_audio_play_sound(ADV_SOUND_GADGETYES);
             SPR->retracting=1;
           } return 0;
       }
@@ -126,7 +126,7 @@ static int _adv_gadget_update(struct adv_sprite *spr) {
         SPR->knife->y=SPR->y0;
       }
     }
-    adv_sound(ADV_SOUND_GADGETYES);
+    ttaq_audio_play_sound(ADV_SOUND_GADGETYES);
     SPR->returning=1;
     return 0;
   }
@@ -138,7 +138,7 @@ static int _adv_gadget_update(struct adv_sprite *spr) {
     if (qspr->y+(ADV_TILE_H>>1)<=y) continue;
     if (adv_sprgrp_has(SPR->grp_latched,qspr)) continue;
     if (SPR->returning) return adv_sprite_kill(spr);
-    adv_sound(ADV_SOUND_GADGETNO);
+    ttaq_audio_play_sound(ADV_SOUND_GADGETNO);
     SPR->returning=1;
     return 0;
   }

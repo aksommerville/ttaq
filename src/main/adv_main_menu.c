@@ -129,13 +129,13 @@ int adv_main_menu_update() {
       #define BTNDOWN(tag) ((adv_inputs[i]&ADV_BTNID_##tag)&&!(player->pvinput&ADV_BTNID_##tag))
       #define BTNUP(tag) (!(adv_inputs[i]&ADV_BTNID_##tag)&&(player->pvinput&ADV_BTNID_##tag))
       if (!player->hero_choice) {
-        adv_sound(ADV_SOUND_ARROW);
+        ttaq_audio_play_sound(ADV_SOUND_MENUYES);
         if (player->hero_choice=adv_main_menu_get_unused_player_sprdefid()) {
           player->spr_hero->tileid=0x02+player->hero_choice-1;
         }
       }
       if (BTNDOWN(UP)) {
-        adv_sound(ADV_SOUND_ARROW);
+        ttaq_audio_play_sound(ADV_SOUND_MENUNO);
         if (player->ready) {
           player->ready=0;
           adv_sprgrp_remove(adv_sprgrp_visible,player->spr_readyl);
@@ -148,7 +148,7 @@ int adv_main_menu_update() {
         }
       }
       if (BTNDOWN(LEFT)&&!player->ready) {
-        adv_sound(ADV_SOUND_ARROW);
+        ttaq_audio_play_sound(ADV_SOUND_MENUYES);
         int nsprdefid=adv_main_menu_cycle_sprdefid(player->hero_choice,-1);
         if (nsprdefid) {
           player->hero_choice=nsprdefid;
@@ -156,7 +156,7 @@ int adv_main_menu_update() {
         }
       }
       if (BTNDOWN(RIGHT)&&!player->ready) {
-        adv_sound(ADV_SOUND_ARROW);
+        ttaq_audio_play_sound(ADV_SOUND_MENUYES);
         int nsprdefid=adv_main_menu_cycle_sprdefid(player->hero_choice,1);
         if (nsprdefid) {
           player->hero_choice=nsprdefid;
@@ -164,7 +164,7 @@ int adv_main_menu_update() {
         }
       }
       if (BTNDOWN(ACTION)) {
-        adv_sound(ADV_SOUND_ARROW);
+        ttaq_audio_play_sound(ADV_SOUND_MENUYES);
         if (!player->ready) {
           player->ready=1;
           adv_sprgrp_insert(adv_sprgrp_visible,player->spr_readyl);

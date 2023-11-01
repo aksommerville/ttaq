@@ -31,7 +31,7 @@ int adv_sprite_gadget_set_owner(struct adv_sprite *spr,struct adv_sprite *owner)
  *****************************************************************************/
  
 static int _adv_hero_create_sword(struct adv_sprite *spr) {
-  adv_sound(ADV_SOUND_SWORD);
+  ttaq_audio_play_sound(ADV_SOUND_SWORD);
   SPR->lock_direction=1;
   SPR->lock_movement=1;
   SPR->walking=0;
@@ -67,7 +67,7 @@ static int _adv_hero_update_sword(struct adv_sprite *spr) {
  *****************************************************************************/
  
 static int _adv_hero_create_arrow(struct adv_sprite *spr) {
-  adv_sound(ADV_SOUND_ARROW);
+  ttaq_audio_play_sound(ADV_SOUND_ARROW);
   SPR->lock_direction=1;
   SPR->lock_movement=1;
   SPR->walking=0;
@@ -92,7 +92,7 @@ static int _adv_hero_create_arrow(struct adv_sprite *spr) {
  *****************************************************************************/
  
 static int _adv_hero_create_gadget(struct adv_sprite *spr) {
-  adv_sound(ADV_SOUND_GADGET);
+  ttaq_audio_play_sound(ADV_SOUND_GADGET);
   SPR->lock_direction=1;
   SPR->lock_movement=1;
   SPR->walking=0;
@@ -281,18 +281,18 @@ static int _adv_hero_check_switches(struct adv_sprite *spr,int pvcol,int pvrow) 
         if ((sw->col==pvcol)&&(sw->row==pvrow)) {
           if (sw->method==ADV_SWITCH_METHOD_DEADMAN) {
             if (_adv_confirm_deadman_switch(sw->globalid)) {
-              adv_sound(ADV_SOUND_SWITCH);
+              ttaq_audio_play_sound(ADV_SOUND_SWITCH);
               if (adv_global_set(sw->globalid,0)<0) return -1;
             }
           }
         } else if ((sw->col==crcol)&&(sw->row==crrow)) {
           if (sw->method==ADV_SWITCH_METHOD_DEADMAN) {
             if (!SPR->ghost) {
-              adv_sound(ADV_SOUND_SWITCH);
+              ttaq_audio_play_sound(ADV_SOUND_SWITCH);
               if (adv_global_set(sw->globalid,1)<0) return -1;
             }
           } else if (sw->method==ADV_SWITCH_METHOD_STOMPBOX) {
-            adv_sound(ADV_SOUND_SWITCH);
+            ttaq_audio_play_sound(ADV_SOUND_SWITCH);
             if (adv_global_set(sw->globalid,adv_global_get(sw->globalid)?0:1)<0) return -1;
           }
         }
@@ -478,7 +478,7 @@ static int _adv_hero_update_xfer(struct adv_sprite *spr) {
   }
   if (!advance) advance=wrap;
   if (!advance) return 0;
-  adv_sound(ADV_SOUND_CHANGECTL);
+  ttaq_audio_play_sound(ADV_SOUND_CHANGECTL);
   ((struct adv_sprite_hero*)advance)->playerid=SPR->playerid;
   ((struct adv_sprite_hero*)advance)->input=ADV_BTNID_SWITCH;
   SPR->playerid=0;
@@ -529,7 +529,7 @@ static int _adv_hero_update_prizes(struct adv_sprite *spr) {
     if (qspr==spr) continue;
     int dx=spr->x-qspr->x; if ((dx<-ADV_TILE_W+HAZARD_GRACE)||(dx>ADV_TILE_W-HAZARD_GRACE)) continue;
     int dy=spr->y-qspr->y; if ((dy<-ADV_TILE_H+HAZARD_GRACE)||(dy>ADV_TILE_H-HAZARD_GRACE)) continue;
-    adv_sound(ADV_SOUND_REVIVE); // we want the sound effect whether it does anything or not
+    ttaq_audio_play_sound(ADV_SOUND_REVIVE); // we want the sound effect whether it does anything or not
     adv_sprite_hero_fleshify(spr,0);
     adv_sprite_kill(qspr);
   }
@@ -633,7 +633,7 @@ int adv_sprite_hero_ghostify(struct adv_sprite *spr) {
   if (!spr||(spr->sprclass!=&adv_sprclass_hero)) return -1;
   if (SPR->ghost) return 0;
   if (SPR->ghost_prevention) return 0;
-  adv_sound(ADV_SOUND_STRIKE);
+  ttaq_audio_play_sound(ADV_SOUND_STRIKE);
   if (!SPR->base_tileid) SPR->base_tileid=((spr->tileid&0x0f)/3)*3;
   SPR->ghost=1;
   SPR->ghost_prevention=GHOST_PREVENTION_TIME;
@@ -667,7 +667,7 @@ int adv_sprite_hero_fleshify(struct adv_sprite *spr,int with_sound_effect) {
   if (!spr||(spr->sprclass!=&adv_sprclass_hero)) return -1;
   if (!SPR->ghost) return 0;
   if (SPR->ghost_prevention) return 0;
-  if (with_sound_effect) adv_sound(ADV_SOUND_REVIVE);
+  if (with_sound_effect) ttaq_audio_play_sound(ADV_SOUND_REVIVE);
   SPR->ghost=0;
   SPR->ghost_prevention=GHOST_PREVENTION_TIME;
   spr->tileid=SPR->base_tileid;
@@ -683,10 +683,10 @@ int adv_sprite_hero_fleshify(struct adv_sprite *spr,int with_sound_effect) {
     struct adv_switch *sw=adv_map->switchv+i;
     if ((sw->col!=col)||(sw->row!=row)) continue;
     if (sw->method==ADV_SWITCH_METHOD_DEADMAN) {
-      adv_sound(ADV_SOUND_SWITCH);
+      ttaq_audio_play_sound(ADV_SOUND_SWITCH);
       if (adv_global_set(sw->globalid,1)<0) return -1;
     } else if (sw->method==ADV_SWITCH_METHOD_STOMPBOX) {
-      adv_sound(ADV_SOUND_SWITCH);
+      ttaq_audio_play_sound(ADV_SOUND_SWITCH);
       if (adv_global_set(sw->globalid,adv_global_get(sw->globalid)?0:1)<0) return -1;
     }
   }

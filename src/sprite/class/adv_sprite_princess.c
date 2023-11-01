@@ -30,7 +30,7 @@ static int _adv_princess_update(struct adv_sprite *spr) {
     if (hero->x>=right) continue;
     if (hero->y<=top) continue;
     if (hero->y>=bottom) continue;
-    adv_sound(ADV_SOUND_RESCUE);
+    ttaq_audio_play_sound(ADV_SOUND_RESCUE);
     if (spr->sprdef) {
       if (adv_global_set(spr->sprdef->argv[0],ADV_PRINCESS_RESCUED)<0) return -1;
     }

@@ -30,6 +30,8 @@ src/shaders/plainsprites_v.essl:16:  gl_PointSize=32.0;//TODO pass sprite size a
 [x] Why aren't sprites appearing? ...GL_POINT_SPRITE+GL_PROGRAM_POINT_SIZE
 [ ] Audio drivers.
 [ ] Synthesizer. How much can we bear to redo? Drop all the sound effects? I don't like having the sample rate fixed at build time.
+[x] Sounds are now completely replaced with hard-coded config at src/synth/ttaq_voice.c. Remove all the logic for stored PCM sounds.
+[x] Why is mainmenu using the ARROW sound? Can we not afford a couple sound effects for the menu?
 [x] glx: Deliver events. We're probably not expecting close and resize, those will take some creativity.
 [ ] glx: Tolerate window resize.
 [ ] Add a useraction to toggle fullscreen.
@@ -37,5 +39,6 @@ src/shaders/plainsprites_v.essl:16:  gl_PointSize=32.0;//TODO pass sprite size a
 [ ] drm driver.
 [ ] bcm driver.
 [ ] glx: Window manager icon.
+[ ] Pretty up that Mappe of ye Worlde.
 [ ] Update README.
 [ ] Make a page on Itch.

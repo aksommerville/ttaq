@@ -247,9 +247,7 @@ int adv_res_init(const char *programpath) {
 
   if (adv_res_load_sprdefs()<0) return -1;
   
-  if (adv_res_load_sounds()<0) return -1;
   if (adv_res_load_songs()<0) return -1;
-  adv_resmgr.songid=-1;
 
   if (adv_res_load_maps()<0) return -1;
   if (adv_res_load_map(1)<0) return -1;
@@ -275,10 +273,6 @@ void adv_res_quit() {
   if (adv_resmgr.sprdefv) {
     for (i=0;i<adv_resmgr.sprdefc;i++) adv_sprdef_del(adv_resmgr.sprdefv[i]);
     free(adv_resmgr.sprdefv);
-  }
-  if (adv_resmgr.songv) {
-    //TODO while (adv_resmgr.songc-->0) akau_song_del(adv_resmgr.songv[adv_resmgr.songc]);
-    free(adv_resmgr.songv);
   }
   adv_res_wipe_globals();
 }

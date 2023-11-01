@@ -261,7 +261,7 @@ static int _adv_res_change_maps(struct adv_map *frommap,struct adv_map *tomap) {
   if (_adv_res_load_map_graphics(tomap)<0) return -1;
   if (_adv_res_replace_sprites(frommap,tomap)<0) return -1;
   if (_adv_res_load_map_misc(tomap)<0) return -1;
-  if (adv_song(tomap->song)<0) return -1;
+  if (ttaq_audio_play_song(tomap->song)<0) return -1;
   return 0;
 }
 

@@ -6,6 +6,7 @@
 #include "sprite/adv_sprclass.h"
 #include "sprite/class/adv_sprite_hero.h"
 #include "res/adv_res.h"
+#include "audio/ttaq_audio.h"
 #include <linux/input.h>
 #include <signal.h>
 #include <sys/time.h>
@@ -47,8 +48,7 @@ static int adv_init(int argc,char **argv) {
   signal(SIGTERM,adv_rcvsig);
   signal(SIGQUIT,adv_rcvsig);
   
-  //TODO if (akau_init(44100)<0) return -1;
-
+  if ((err=ttaq_audio_init())<0) return err;
   if ((err=adv_sprgrp_init())<0) return err;
   if ((err=adv_input_init())<0) return err;
   if ((err=adv_video_init())<0) return err;
@@ -59,6 +59,7 @@ static int adv_init(int argc,char **argv) {
   
   if (adv_game_load(0)<0) fprintf(stderr,"Failed to load saved game.\n");
   if (adv_main_menu_begin()<0) return -1;
+  ttaq_audio_play(1);
 
   return 0;
 }
@@ -67,9 +68,9 @@ static int adv_init(int argc,char **argv) {
  *****************************************************************************/
 
 static void adv_quit() {
+  ttaq_audio_quit();
   adv_input_quit();
   adv_res_quit();
-  //TODO akau_quit();
   adv_video_quit();
   adv_sprgrp_quit();
 }
@@ -122,6 +123,7 @@ static int adv_update() {
   }
   
   if ((err=adv_video_update())<0) return err;
+  if ((err=ttaq_audio_update())<0) return err;
   return 1;
 }
 

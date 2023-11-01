@@ -34,9 +34,6 @@ extern struct adv_resmgr {
   // Available sprite definitions, sorted by id.
   struct adv_sprdef **sprdefv; int sprdefc,sprdefa;
   
-  struct akau_song **songv; int songc,songa;
-  int songid;
-  
 } adv_resmgr;
 
 int adv_res_tilesheet_search(int id);
@@ -44,7 +41,6 @@ int adv_res_tilesheet_insert(int p,int id,const char *path,int pathc);
 
 int adv_res_load_maps();
 int adv_res_load_sprdefs();
-int adv_res_load_sounds();
 int adv_res_load_songs();
 
 #endif

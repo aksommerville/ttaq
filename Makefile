@@ -25,18 +25,18 @@ ifeq (old pi with bcm,)
   LDPOST:=-lGLESv2 -lz -lasound
   
 else ifeq (linux desktop,linux desktop)
-  OPT_ENABLE:=glx pulse evdev
+  OPT_ENABLE:=glx alsa evdev
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit $(foreach U,$(OPT_ENABLE),-DUSE_$U)
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
-  LDPOST:=-lm -lz -lpulse-simple -lGL -lGLX -lX11
+  LDPOST:=-lm -lz -lGL -lGLX -lX11
   
 else ifeq (linux guiless,)
   OPT_ENABLE:=drm alsa evdev
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U)
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
-  LDPOST:=-lm -lz -lasound -lGL -ldrm
+  LDPOST:=-lm -lz -lGL -ldrm
   
 else
   $(error Please select configuration. Edit Makefile)

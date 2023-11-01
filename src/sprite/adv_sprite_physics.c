@@ -217,7 +217,7 @@ int adv_sprite_premove(struct adv_sprite *spr,int dx,int dy) {
 int adv_sprite_hurt_default(struct adv_sprite *spr) {
   if (!spr) return -1;
   if (!adv_sprgrp_has(adv_sprgrp_fragile,spr)) return 0;
-  adv_sound(ADV_SOUND_STRIKE);
+  ttaq_audio_play_sound(ADV_SOUND_STRIKE);
   if (adv_sprite_create(0,90,spr->x,spr->y)<0) return -1;
   if (adv_sprite_create(0,10,spr->x,spr->y)<0) return -1;
   if (adv_sprite_kill(spr)<0) return -1;
