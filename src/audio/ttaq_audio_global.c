@@ -99,7 +99,6 @@ int ttaq_audio_play_sound(int soundid) {
  
 int ttaq_audio_play_song(int songid) {
   if (!ttaq_audio.rate) return 0;
-  fprintf(stderr,"%s %d\n",__func__,songid);
   if (songid==ttaq_audio.synth.songid) return 0;
   if (ttaq_audio_lock()>=0) {
     ttaq_synth_play_song(&ttaq_audio.synth,songid);
@@ -132,7 +131,6 @@ void ttaq_audio_unlock() {
  */
  
 int ttaq_audio_load_song(int songid,const void *src,int srcc) {
-  fprintf(stderr,"%s %d c=%d\n",__func__,songid,srcc);//TODO
   if (!ttaq_audio.rate) return 0;
   return ttaq_synth_load_song(&ttaq_audio.synth,songid,src,srcc);
 }

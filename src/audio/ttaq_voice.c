@@ -207,7 +207,7 @@ static void ttaq_sound_begin_HAT(struct ttaq_voice *voice,struct ttaq_synth *syn
   voice->modrate=1.8f;
   ttaq_env_init_ramp_hz(&voice->pd,synth,1200.0f,150,1900.0f);
   ttaq_env_init_ramp(&voice->modrange,synth,1.0f,150,6.0f);
-  ttaq_env_init_level(&voice->level,synth,0x30,5,0x18,0,140);
+  ttaq_env_init_level(&voice->level,synth,0x18,5,0x18,0,140);
   voice->update=ttaq_voice_update_relfm;
 }
  
@@ -215,7 +215,7 @@ static void ttaq_sound_begin_KICK(struct ttaq_voice *voice,struct ttaq_synth *sy
   voice->modrate=1.0f;
   ttaq_env_init_ramp_hz(&voice->pd,synth,130.0f,200,20.0f);
   ttaq_env_init_constant(&voice->modrange,1.0f);
-  ttaq_env_init_level(&voice->level,synth,0x70,10,0x80,0,200);
+  ttaq_env_init_level(&voice->level,synth,0x40,10,0x80,0,200);
   voice->update=ttaq_voice_update_relfm;
 }
  
@@ -241,15 +241,15 @@ static void ttaq_sound_begin_RIDE(struct ttaq_voice *voice,struct ttaq_synth *sy
     500,
     3.0f
   );
-  ttaq_env_init_level(&voice->level,synth,0x60,10,0x20,0,200);
+  ttaq_env_init_level(&voice->level,synth,0x18,10,0x40,0,200);
   voice->update=ttaq_voice_update_relfm;
 }
  
 static void ttaq_sound_begin_SNARE(struct ttaq_voice *voice,struct ttaq_synth *synth) {
-  voice->modrate=1.7f;
+  voice->modrate=4.7f;
   ttaq_env_init_ramp_hz(&voice->pd,synth,800.0f,200,750.0f);
   ttaq_env_init_ramp(&voice->modrange,synth,5.0f,200,3.0f);
-  ttaq_env_init_level(&voice->level,synth,0x70,10,0x10,0,200);
+  ttaq_env_init_level(&voice->level,synth,0x40,10,0x40,0,200);
   voice->update=ttaq_voice_update_relfm;
 }
  
@@ -303,4 +303,62 @@ void ttaq_synth_play_sound(struct ttaq_synth *synth,int soundid) {
         voice->update=0;
       }
   }
+}
+
+/* Begin tuned note.
+ */
+ 
+void ttaq_synth_play_note(struct ttaq_synth *synth,int instrumentid,float normrate,int ttl) {
+  //fprintf(stderr,"%s %d %f %d\n",__func__,instrumentid,normrate,ttl);
+  struct ttaq_voice *voice=ttaq_voice_new(synth);
+  if (!voice) return;
+  voice->p=0.0f;
+  voice->modp=0.0f;
+  voice->defunct=0;
+  if (ttl<=0) voice->autorelease=synth->rate>>2;
+  else voice->autorelease=ttl;
+  switch (instrumentid) {
+  
+    case 4: { // lead
+        voice->modrate=1.0f;
+        ttaq_env_init_constant(&voice->pd,normrate);
+        ttaq_env_init_generic(&voice->modrange,synth,1.0f,40,1.5f,100,1.5f,1,400,0.5f);
+        ttaq_env_init_level(&voice->level,synth,0x60,15,0x30,1,600);
+        voice->update=ttaq_voice_update_relfm;
+      } break;
+  
+    case 5: { // bass
+        voice->modrate=0.5f;
+        ttaq_env_init_constant(&voice->pd,normrate);
+        ttaq_env_init_generic(&voice->modrange,synth,0.5f,40,2.0f,100,1.0f,1,400,0.5f);
+        ttaq_env_init_level(&voice->level,synth,0x40,20,0x50,1,200);
+        voice->update=ttaq_voice_update_relfm;
+      } break;
+  
+    case 6: { // pad
+        voice->modrate=1.0f;
+        ttaq_env_init_constant(&voice->pd,normrate);
+        ttaq_env_init_constant(&voice->modrange,3.0f);
+        ttaq_env_init_level(&voice->level,synth,0x20,80,0x80,1,450);
+        voice->update=ttaq_voice_update_relfm;
+      } break;
+  
+    default: { // shouldn't happen
+        voice->modrate=1.0f;
+        ttaq_env_init_constant(&voice->pd,normrate);
+        ttaq_env_init_constant(&voice->modrange,1.0f);
+        ttaq_env_init_level(&voice->level,synth,0x20,40,0x50,1,200);
+        voice->update=ttaq_voice_update_relfm;
+      }
+  }
+}
+        
+
+/* Release.
+ */
+ 
+void ttaq_voice_release(struct ttaq_voice *voice) {
+  ttaq_env_release(&voice->pd);
+  ttaq_env_release(&voice->modrange);
+  ttaq_env_release(&voice->level);
 }

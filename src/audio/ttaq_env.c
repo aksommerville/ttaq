@@ -110,6 +110,7 @@ void ttaq_env_advance_stage(struct ttaq_env *env) {
           env->hold=1;
           env->level=env->level_rls;
         } else {
+          env->hold=0;
           env->stage=2;
           env->level=env->level_rls;
           env->leveld=env->leveld_rls;

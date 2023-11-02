@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include <math.h>
 
+/* Envelope.
+ **********************************************************************/
+
 struct ttaq_env {
   int hold;
   float level;
@@ -82,6 +85,9 @@ static inline float ttaq_env_next(struct ttaq_env *env) {
   return env->level;
 }
 
+/* Voice.
+ *********************************************************************/
+
 struct ttaq_voice {
 
   float p;
@@ -90,6 +96,7 @@ struct ttaq_voice {
   float modrate; // Absolute c/frame, or multiplier against (pd), depends on (update).
   struct ttaq_env modrange; // Amount of FM effect, typically in like 0..5
   struct ttaq_env level; // Output level in 0..1
+  int autorelease; // frames. <=0 means not scheduled to autorelease
 
   /* Required.
    * Add to (v), preserve existing signal.
@@ -105,5 +112,49 @@ struct ttaq_voice {
  * Caller must set (voice->update) and unset (voice->defunct) to accept it.
  */
 struct ttaq_voice *ttaq_voice_new(struct ttaq_synth *synth);
+
+void ttaq_voice_release(struct ttaq_voice *voice);
+
+/* Song.
+ * The ttaq_song object is both the data container and the live player.
+ ***************************************************************************/
+ 
+struct ttaq_song_event {
+  int time; // frames from start of song
+  float rate; // normalized
+  int ttl;
+  int soundid;
+};
+
+struct ttaq_song {
+// Permanent:
+  int mainrate;
+  struct ttaq_song_event *eventv;
+  int eventc,eventa;
+  int tempo,frames_per_beat; // only relevant during decode
+  int framec;
+// Volatile:
+  int eventp;
+  int time; // frames
+};
+
+void ttaq_song_del(struct ttaq_song *song);
+struct ttaq_song *ttaq_song_new(const void *v,int c,int mainrate,int songid);
+
+/* Drop all state and start over from the beginning.
+ */
+void ttaq_song_reset(struct ttaq_song *song);
+
+/* If an event is ready to play, populate (event) and return zero.
+ * Otherwise return the duration in frames until the next event.
+ */
+int ttaq_song_update(struct ttaq_song_event *event,struct ttaq_song *song);
+
+/* Advance our clock by so many frames.
+ * Call this after ttaq_song_update() returns positive, with a number no greater than that.
+ */
+void ttaq_song_advance(struct ttaq_song *song,int framec);
+
+void ttaq_synth_event(struct ttaq_synth *synth,const struct ttaq_song_event *event);
 
 #endif

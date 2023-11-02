@@ -5,6 +5,8 @@
 
 void ttaq_synth_cleanup(struct ttaq_synth *synth) {
   if (synth->voicev) free(synth->voicev);
+  int i=TTAQ_SYNTH_SONG_LIMIT;
+  while (i-->0) ttaq_song_del(synth->songv[i]);
   memset(synth,0,sizeof(struct ttaq_synth));
 }
 
@@ -29,7 +31,11 @@ int ttaq_synth_init(struct ttaq_synth *synth,int rate,int chanc) {
  */
  
 int ttaq_synth_load_song(struct ttaq_synth *synth,int songid,const void *v,int c) {
-  fprintf(stderr,"%s %d c=%d\n",__func__,songid,c);
+  if ((songid<0)||(songid>=TTAQ_SYNTH_SONG_LIMIT)) return 0;
+  struct ttaq_song *song=ttaq_song_new(v,c,synth->rate,songid);
+  if (!song) return 0;
+  ttaq_song_del(synth->songv[songid]);
+  synth->songv[songid]=song;
   return 0;
 }
 
@@ -65,7 +71,7 @@ static void ttaq_synth_drop_defunct_voices(struct ttaq_synth *synth) {
   }
 }
 
-/* Genereate an uninterrupted portion of the signal.
+/* Generate an uninterrupted portion of the signal.
  * Voices operate floating-point, and output is integers.
  */
  
@@ -74,6 +80,11 @@ static void ttaq_synth_update_f(float *v,int c,struct ttaq_synth *synth) {
   struct ttaq_voice *voice=synth->voicev;
   int i=synth->voicec;
   for (;i-->0;voice++) {
+    if (voice->autorelease>0) {
+      if ((voice->autorelease-=c)<=0) {
+        ttaq_voice_release(voice);
+      }
+    }
     if (voice->update) {
       voice->update(v,c,synth,voice);
     } else {
@@ -110,7 +121,24 @@ static void ttaq_synth_generate_signal(int16_t *v,int c,struct ttaq_synth *synth
  
 static void ttaq_synth_update_mono(int16_t *v,int c,struct ttaq_synth *synth) {
   while (c>0) {
-    int updc=c; //TODO check song, how far to the next event?
+    int updc=c;
+    
+    if (synth->song) {
+      int err;
+      struct ttaq_song_event event;
+      while (!(err=ttaq_song_update(&event,synth->song))) {
+        ttaq_synth_event(synth,&event);
+      }
+      if (err<0) {
+        ttaq_synth_play_song(synth,-1);
+      } else if (err<updc) {
+        updc=err;
+      }
+      if (synth->song) {
+        ttaq_song_advance(synth->song,updc);
+      }
+    }
+    
     ttaq_synth_generate_signal(v,updc,synth);
     v+=updc;
     c-=updc;
@@ -159,5 +187,38 @@ void ttaq_synth_update(int16_t *v,int c,struct ttaq_synth *synth) {
  */
  
 void ttaq_synth_play_song(struct ttaq_synth *synth,int songid) {
-  //TODO
+  if (synth->songid==songid) return;
+  struct ttaq_song *song=0;
+  if ((songid>=0)&&(songid<TTAQ_SYNTH_SONG_LIMIT)) song=synth->songv[songid];
+  synth->songid=songid;
+  synth->song=song;
+  ttaq_synth_release_all(synth);
+  if (!synth->song) return;
+  ttaq_song_reset(synth->song);
+}
+
+/* Release all notes.
+ */
+ 
+void ttaq_synth_release_all(struct ttaq_synth *synth) {
+  struct ttaq_voice *voice=synth->voicev;
+  int i=synth->voicec;
+  for (;i-->0;voice++) ttaq_voice_release(voice);
+}
+
+void ttaq_synth_silence_all(struct ttaq_synth *synth) {
+  synth->voicec=0;
+}
+
+/* Apply song event.
+ */
+ 
+void ttaq_synth_event(struct ttaq_synth *synth,const struct ttaq_song_event *event) {
+  //fprintf(stderr,"%s rate=%f ttl=%d soundid=%d\n",__func__,event->rate,event->ttl,event->soundid);//TODO
+  if (event->soundid<0) return; // invalid. shouldn't happen, but we could drop invalids in the stream if something fails during decode.
+  if (event->rate>0.0f) { // tuned sustainable note
+    ttaq_synth_play_note(synth,event->soundid,event->rate,event->ttl);
+  } else { // fire-and-forget pcm note
+    ttaq_synth_play_sound(synth,event->soundid);
+  }
 }

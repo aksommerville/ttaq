@@ -9,10 +9,16 @@
 
 #include <stdint.h>
 
-#define TTAQ_SYNTH_VOICE_LIMIT 16
+/* No particular reason for these limits.
+ * Just declaring fixed sizes for this to avoid dynamic allocation.
+ * Perfectly safe to change.
+ */
+#define TTAQ_SYNTH_VOICE_LIMIT 32
 #define TTAQ_SYNTH_BUFFER_SIZE 512
+#define TTAQ_SYNTH_SONG_LIMIT 20
 
 struct ttaq_voice;
+struct ttaq_song;
 
 struct ttaq_synth {
   int rate,chanc;
@@ -20,6 +26,8 @@ struct ttaq_synth {
   struct ttaq_voice *voicev;
   int voicec;
   float buffer[TTAQ_SYNTH_BUFFER_SIZE];
+  struct ttaq_song *songv[TTAQ_SYNTH_SONG_LIMIT];
+  struct ttaq_song *song; // WEAK
 };
 
 void ttaq_synth_cleanup(struct ttaq_synth *synth);
@@ -32,6 +40,10 @@ int ttaq_synth_load_song(struct ttaq_synth *synth,int songid,const void *v,int c
 void ttaq_synth_update(int16_t *v,int c,struct ttaq_synth *synth);
 
 void ttaq_synth_play_sound(struct ttaq_synth *synth,int soundid);
+void ttaq_synth_play_note(struct ttaq_synth *synth,int instrumentid,float normrate,int ttl);
 void ttaq_synth_play_song(struct ttaq_synth *synth,int songid);
+
+void ttaq_synth_release_all(struct ttaq_synth *synth);
+void ttaq_synth_silence_all(struct ttaq_synth *synth);
 
 #endif
