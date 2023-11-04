@@ -164,7 +164,6 @@ int adv_controller_setup(struct adv_controller *controller,int devid,int vid,int
     }
   }
   for (i=0;i<inmap->keymapc;i++) {
-    //TODO if (!linput_device_layout_has_key(&layout,inmap->keymapv[i].code)) continue;
     int p=controller->keymapc;
     if (adv_controller_keymap_insert(controller,p,inmap->keymapv[i].code)<0) return -1;
     controller->keymapv[p]=inmap->keymapv[i];

@@ -214,7 +214,6 @@ void ttaq_synth_silence_all(struct ttaq_synth *synth) {
  */
  
 void ttaq_synth_event(struct ttaq_synth *synth,const struct ttaq_song_event *event) {
-  //fprintf(stderr,"%s rate=%f ttl=%d soundid=%d\n",__func__,event->rate,event->ttl,event->soundid);//TODO
   if (event->soundid<0) return; // invalid. shouldn't happen, but we could drop invalids in the stream if something fails during decode.
   if (event->rate>0.0f) { // tuned sustainable note
     ttaq_synth_play_note(synth,event->soundid,event->rate,event->level,event->ttl);

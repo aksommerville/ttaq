@@ -67,7 +67,7 @@ static int ttaq_song_decode_instrument(struct ttaq_song *song,const char *src,in
 }
 
 /* Decode "tempo" line.
- * TODO I forget what the unit is supposed to be.
+ * Tempo is in beats per minute, mind that "beat" is our quantum of time, so it's usually finer than a quarter note.
  * Higher is faster.
  * Existing songs range from 300 to 1200.
  */

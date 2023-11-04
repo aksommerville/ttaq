@@ -444,3 +444,9 @@ void adv_video_toggle_fullscreen() {
   #endif
   // drm and bcm won't do this; they are inherently fullscreen always.
 }
+
+void adv_video_suppress_screensaver() {
+  #if USE_glx
+    glx_suppress_screensaver();
+  #endif
+}

@@ -1,6 +1,7 @@
 #include "adv_input_internal.h"
 #include "sprite/adv_sprite.h"
 #include "sprite/class/adv_sprite_hero.h"
+#include "video/adv_video.h"
 
 struct adv_input adv_input={0};
 unsigned char adv_inputs[1+ADV_PLAYER_LIMIT]={0};
@@ -32,6 +33,7 @@ static void _cb_evdev_disconnect(struct evdev_device *device) {
 static void _cb_evdev_button(struct evdev_device *device,int type,int code,int value) {
   //fprintf(stderr,"%s %p.%d.%d=%d\n",__func__,device,type,code,value);
   adv_input_event(evdev_device_get_devid(device),(type<<16)|code,value);
+  adv_video_suppress_screensaver();
 }
 
 #endif

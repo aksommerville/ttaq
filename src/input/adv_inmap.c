@@ -186,23 +186,6 @@ int adv_inmap_compare(struct adv_inmap *inmap,int vid,int pid,const char *name,i
   if (add<1) return 0;
   score+=(add>1)?10:1;
   
-  // The five critical buttons must exist. One point for every output button (critical and optional).
-  #if 0 // TODO I'm not setting up to query device capabilities. ugh... should we?
-  int i;
-  unsigned char havebtn=0;
-  for (i=0;i<inmap->absmapc;i++) {
-    if (!linput_device_layout_has_abs(layout,inmap->absmapv[i].code)) continue;
-    havebtn|=inmap->absmapv[i].btnlo;
-    havebtn|=inmap->absmapv[i].btnhi;
-  }
-  for (i=0;i<inmap->keymapc;i++) {
-    if (!linput_device_layout_has_key(layout,inmap->keymapv[i].code)) continue;
-    havebtn|=inmap->keymapv[i].btn;
-  }
-  if ((havebtn&ADV_BTNID_CRITICAL)!=ADV_BTNID_CRITICAL) return 0;
-  for (i=0x80;i;i>>=1) if (havebtn&i) score++;
-  #endif
-  
   return score;
 }
 

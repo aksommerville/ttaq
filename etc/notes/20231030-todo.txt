@@ -27,13 +27,9 @@ src/main/adv_main.c:50:  //TODO if (akau_init(44100)<0) return -1;
 src/main/adv_main.c:72:  //TODO akau_quit();
 src/shaders/plainsprites_v.essl:16:  gl_PointSize=32.0;//TODO pass sprite size as a uniform?
 
-[x] Audio drivers.
-[x] glx: Tolerate window resize.
-[x] Add a useraction to toggle fullscreen.
-[x] evdev driver.
 [ ] drm driver.
 [ ] bcm driver.
-[ ] glx: Window manager icon.
-[ ] Pretty up that Mappe of ye Worlde.
+[x] glx: Window manager icon.
+[x] Pretty up that Mappe of ye Worlde.
 [ ] Update README.
 [ ] Make a page on Itch.
