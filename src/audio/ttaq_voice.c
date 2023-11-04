@@ -272,7 +272,7 @@ static void ttaq_sound_begin_MENUNO(struct ttaq_voice *voice,struct ttaq_synth *
 /* Begin sound effect.
  */
  
-void ttaq_synth_play_sound(struct ttaq_synth *synth,int soundid) {
+void ttaq_synth_play_sound(struct ttaq_synth *synth,int soundid,float level) {
   struct ttaq_voice *voice=ttaq_voice_new(synth);
   if (!voice) return;
   voice->p=0.0f;
@@ -303,12 +303,13 @@ void ttaq_synth_play_sound(struct ttaq_synth *synth,int soundid) {
         voice->update=0;
       }
   }
+  ttaq_env_trim(&voice->level,level);
 }
 
 /* Begin tuned note.
  */
  
-void ttaq_synth_play_note(struct ttaq_synth *synth,int instrumentid,float normrate,int ttl) {
+void ttaq_synth_play_note(struct ttaq_synth *synth,int instrumentid,float normrate,float level,int ttl) {
   //fprintf(stderr,"%s %d %f %d\n",__func__,instrumentid,normrate,ttl);
   struct ttaq_voice *voice=ttaq_voice_new(synth);
   if (!voice) return;
@@ -351,6 +352,7 @@ void ttaq_synth_play_note(struct ttaq_synth *synth,int instrumentid,float normra
         voice->update=ttaq_voice_update_relfm;
       }
   }
+  ttaq_env_trim(&voice->level,level);
 }
         
 

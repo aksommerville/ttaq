@@ -88,7 +88,7 @@ int ttaq_audio_play(int play) {
 int ttaq_audio_play_sound(int soundid) {
   if (!ttaq_audio.rate) return 0;
   if (ttaq_audio_lock()>=0) {
-    ttaq_synth_play_sound(&ttaq_audio.synth,soundid);
+    ttaq_synth_play_sound(&ttaq_audio.synth,soundid,1.0f);
     ttaq_audio_unlock();
   }
   return 0;

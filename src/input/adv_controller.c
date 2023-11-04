@@ -91,10 +91,32 @@ int adv_controller_keymap_insert(struct adv_controller *controller,int p,int cod
 /* setup
  *****************************************************************************/
  
+#if USE_evdev
+static int _cb_evdev_cap(int type,int code,int usage,int lo,int hi,int value,void *userdata) {
+  struct input_absinfo *absinfov=userdata;
+  if (type!=EV_ABS) return 0;
+  if (code<0) return 0;
+  if (code>=ABS_CNT) return 0;
+  absinfov[code].minimum=lo;
+  absinfov[code].maximum=hi;
+  return 0;
+}
+#endif
+ 
 int adv_controller_setup(struct adv_controller *controller,int devid,int vid,int pid,const char *name,int namec) {
   if (!controller) return -1;
   if (!name||(namec<0)) namec=0;
   controller->devid=devid;
+  
+  /* Ideally, we would query devices and that would be the main driver of configuring each button.
+   * But this was already written and I'm looking to get it up and running with minimal fuss.
+   * So for evdev devices only, we query and record all the ABS buttons.
+   * We're already equipped with Linux headers, and this is a closer fit to the older linput library we were written for.
+   */
+  #if USE_evdev
+    struct input_absinfo absinfov[ABS_CNT]={0};
+    evdev_device_enumerate(evdev_device_by_devid(adv_input.evdev,devid),_cb_evdev_cap,absinfov);
+  #endif
   
   int bestinmap=-1,score=0,i;
   for (i=0;i<adv_input.inmapc;i++) {
@@ -110,14 +132,24 @@ int adv_controller_setup(struct adv_controller *controller,int devid,int vid,int
   /* Apply inmap to controller. */
   struct adv_inmap *inmap=adv_input.inmapv[bestinmap];
   for (i=0;i<inmap->absmapc;i++) {
-    //TODO if (!linput_device_layout_has_abs(&layout,inmap->absmapv[i].code)) continue;
+    
+    #if USE_evdev
+      if (inmap->absmapv[i].code<0) continue;
+      if (inmap->absmapv[i].code>=ABS_CNT) continue;
+      const struct input_absinfo *absinfo=absinfov+inmap->absmapv[i].code;
+      if (absinfo->minimum>=absinfo->maximum) continue;
+      int lo=absinfo->minimum;
+      int hi=absinfo->maximum;
+    #else
+      int lo=-32767;
+      int hi=32768;
+    #endif
+    
     int p=controller->absmapc; // controller and layout both sort by code, so we don't need to search here
     if (adv_controller_absmap_insert(controller,p,inmap->absmapv[i].code)<0) return -1;
     struct adv_absmap *m=controller->absmapv+p;
     *m=inmap->absmapv[i];
-    //TODO We probably do need to query input devices; can't just make shit up for the abs ranges.
-    int lo=-32767;//layout.absinfo[m->code].minimum;
-    int hi=32768;//layout.absinfo[m->code].maximum;
+    
     if (lo<-32768) lo=-32768;
     if (hi>32767) hi=32767;
     if (lo>=hi) { lo=-32768; hi=32767; }

@@ -107,6 +107,7 @@ struct ttaq_track {
 static int ttaq_song_decode_track_header(struct ttaq_track *track,const char *src,int srcc) {
   memset(track,0,sizeof(struct ttaq_track));
   track->sustainp=-1;
+  track->level=100;
   int srcp=0;
   
   // Instrument zero is a real thing and should need to be distinguished from empty.
@@ -124,15 +125,17 @@ static int ttaq_song_decode_track_header(struct ttaq_track *track,const char *sr
   if (src[srcp++]!=':') return -1;
   while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
   
+  int xlevel=0;
   while ((srcp<srcc)&&(src[srcp]!='@')) {
     if ((unsigned char)src[srcp]>0x20) {
       int digit=src[srcp]-'0';
       if ((digit<0)||(digit>9)) return -1;
-      track->level*=10;
-      track->level+=digit;
+      xlevel*=10;
+      xlevel+=digit;
     }
     srcp++;
   }
+  if (xlevel) track->level=xlevel;
   if (srcp>=srcc) return 0;
   if (src[srcp++]!='@') return -1;
   while ((srcp<srcc)&&((unsigned char)src[srcp]<=0x20)) srcp++;
@@ -211,6 +214,7 @@ static int ttaq_song_decode_note(struct ttaq_song *song,struct ttaq_track *track
       case 3: event->soundid=ADV_SOUND_RIDE; break;
       default: event->soundid=-1; break;
     }
+    event->level=track->level;
     return 0;
   }
   
@@ -247,6 +251,7 @@ static int ttaq_song_decode_note(struct ttaq_song *song,struct ttaq_track *track
   event->rate=(440.0f*powf(2.0f,(float)(noteid-0x10)/12.0f))/(float)song->mainrate;
   
   event->soundid=track->instrument;
+  event->level=track->level/100.0f;
   
   return 0;
 }

@@ -84,6 +84,20 @@ void ttaq_env_init_generic(
   env->leveld_rls=(env->level_fin-env->level_rls)/env->levelc_rls;
 }
 
+/* Apply trim.
+ */
+ 
+void ttaq_env_trim(struct ttaq_env *env,float level) {
+  if (level<=0.0f) level=0.0f;
+  else if (level>=1.0f) return;
+  env->level*=level;
+  env->leveld*=level;
+  env->level_dec*=level;
+  env->leveld_dec*=level;
+  env->level_rls*=level;
+  env->leveld_rls*=level;
+}
+
 /* Release.
  */
 

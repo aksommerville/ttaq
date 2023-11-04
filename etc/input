@@ -136,6 +136,21 @@ device "Xbox Joystick"
   BTN_START  DETACH
 end
 
+device "Microsoft X-Box 360 pad"
+  ABS_HAT0X  LEFT RIGHT
+  ABS_HAT0Y  UP DOWN
+  ABS_X      LEFT RIGHT
+  ABS_Y      UP DOWN
+  BTN_A      ACTION
+  BTN_B      ACTION
+  BTN_X      ACTION
+  BTN_Y      FOLLOWME
+  BTN_TR     SWITCH
+  BTN_TL     FOLLOWME
+  BTN_SELECT SWITCH
+  BTN_START  DETACH
+end
+
 device "snowman" # wiimote
   ABS_X        LEFT RIGHT
   ABS_Y        UP DOWN

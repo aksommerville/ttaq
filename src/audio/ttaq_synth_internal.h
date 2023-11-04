@@ -65,6 +65,8 @@ void ttaq_env_init_generic(
   float rlslevel
 );
 
+void ttaq_env_trim(struct ttaq_env *env,float level);
+
 void ttaq_env_release(struct ttaq_env *env);
 
 static inline int ttaq_env_is_finished(const struct ttaq_env *env) {
@@ -121,7 +123,8 @@ void ttaq_voice_release(struct ttaq_voice *voice);
  
 struct ttaq_song_event {
   int time; // frames from start of song
-  float rate; // normalized
+  float rate; // normalized (0..1/2)
+  float level; // 0..1
   int ttl;
   int soundid;
 };

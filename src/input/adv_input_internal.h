@@ -3,7 +3,11 @@
 
 #include "adv.h"
 #include "adv_input.h"
-#include <linux/input.h>
+#include <linux/input.h> /* We depend on defines from here, oops, shitty design. */
+
+#if USE_evdev
+  #include "opt/evdev/evdev.h"
+#endif
 
 struct adv_useraction {
   int keycode,useraction;
@@ -49,6 +53,10 @@ extern struct adv_input {
   
   struct adv_inmap **inmapv;
   int inmapc,inmapa;
+  
+  #if USE_evdev
+    struct evdev *evdev;
+  #endif
   
 } adv_input;
 

@@ -5,11 +5,58 @@
 struct adv_input adv_input={0};
 unsigned char adv_inputs[1+ADV_PLAYER_LIMIT]={0};
 
+/* Callbacks from evdev.
+ ***********************************************************************/
+#if USE_evdev
+
+static void _cb_evdev_connect(struct evdev_device *device) {
+  int devid=adv_input_devid_next();
+  if (devid<1) return;
+  evdev_device_set_devid(device,devid);
+  char name[256];
+  int namec=evdev_device_get_name(name,sizeof(name),device);
+  if ((namec<0)||(namec>=sizeof(name))) namec=0;
+  name[namec]=0;
+  int vid=evdev_device_get_vid(device);
+  int pid=evdev_device_get_pid(device);
+  adv_input_connect(devid,vid,pid,name,namec);
+  fprintf(stderr,"Connected input device %d: %04x/%04x '%.*s'\n",devid,vid,pid,namec,name);
+}
+
+static void _cb_evdev_disconnect(struct evdev_device *device) {
+  int devid=evdev_device_get_devid(device);
+  fprintf(stderr,"Disconnected input device %d.\n",devid);
+  adv_input_disconnect(devid);
+}
+
+static void _cb_evdev_button(struct evdev_device *device,int type,int code,int value) {
+  //fprintf(stderr,"%s %p.%d.%d=%d\n",__func__,device,type,code,value);
+  adv_input_event(evdev_device_get_devid(device),(type<<16)|code,value);
+}
+
+#endif
+
 /* init
  *****************************************************************************/
  
 int adv_input_init() {
   if (adv_input_read_maps()<0) return -1;
+  
+  #if USE_evdev
+    struct evdev_delegate delegate={
+      .connect=_cb_evdev_connect,
+      .disconnect=_cb_evdev_disconnect,
+      .button=_cb_evdev_button,
+    };
+    struct evdev_setup setup={
+      .path="/dev/input",
+      .use_inotify=1,
+      .grab_devices=1,
+      .guess_hid=0, // we were built for evdev from the start, no need to guess hid codes
+    };
+    if (!(adv_input.evdev=evdev_new(&delegate,&setup))) return -1;
+  #endif
+  
   return 0;
 }
 
@@ -17,6 +64,9 @@ int adv_input_init() {
  *****************************************************************************/
  
 void adv_input_quit() {
+  #if USE_evdev
+    evdev_del(adv_input.evdev);
+  #endif
   if (adv_input.useractionv) free(adv_input.useractionv);
   if (adv_input.controllerv) {
     while (adv_input.controllerc-->0) adv_controller_del(adv_input.controllerv[adv_input.controllerc]);
@@ -78,7 +128,9 @@ int adv_input_remove_player(int playerid) {
  *****************************************************************************/
  
 int adv_input_update() {
-  //TODO if (linput_update(0)<0) return -1;
+  #if USE_evdev
+    if (evdev_update(adv_input.evdev,0)<0) return -1;
+  #endif
   return 0;
 }
 

@@ -39,8 +39,8 @@ int ttaq_synth_load_song(struct ttaq_synth *synth,int songid,const void *v,int c
  */
 void ttaq_synth_update(int16_t *v,int c,struct ttaq_synth *synth);
 
-void ttaq_synth_play_sound(struct ttaq_synth *synth,int soundid);
-void ttaq_synth_play_note(struct ttaq_synth *synth,int instrumentid,float normrate,int ttl);
+void ttaq_synth_play_sound(struct ttaq_synth *synth,int soundid,float level);
+void ttaq_synth_play_note(struct ttaq_synth *synth,int instrumentid,float normrate,float level,int ttl);
 void ttaq_synth_play_song(struct ttaq_synth *synth,int songid);
 
 void ttaq_synth_release_all(struct ttaq_synth *synth);
