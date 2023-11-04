@@ -21,10 +21,12 @@
 global KEY_ESC      QUIT
 global KEY_P        PAUSE
 global KEY_F1       SAVE
+global KEY_F11      FULLSCREEN
 
 global 0x00070029 QUIT
 global 0x00070013 PAUSE
 global 0x0007003a SAVE
+global 0x00070044 FULLSCREEN
 
 #------------------------------------------------------------------------------
 # 

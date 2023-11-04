@@ -16,5 +16,6 @@ int glx_begin();
 int glx_end();
 
 void glx_get_screen_size(int *w,int *h);
+void glx_toggle_fullscreen();
 
 #endif

@@ -33,6 +33,9 @@ int adv_video_begin_main_menu();
 int adv_video_end_main_menu();
 int adv_video_is_main_menu();
 
+void adv_video_resized(int w,int h);
+void adv_video_toggle_fullscreen();
+
 /* Functions to deliver raw graphics to GPU stores.
  * These are invoked as necessary by the resource manager.
  * Nobody else should be calling them.

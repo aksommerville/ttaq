@@ -76,7 +76,7 @@ static GLuint adv_shaders_compile(const char *refname,const char *vsrc,const cha
 
 int adv_shaders_load() {
 
-  int screenw=adv_video.screenw,screenh=adv_video.screenh;
+  int screenw=ADV_SCREEN_W,screenh=ADV_SCREEN_H;
   if ((screenw<1)||(screenh<1)) return -1;
   GLfloat nscreenx=-(GLfloat)ADV_SCREEN_W/screenw;
   GLfloat nscreeny= (GLfloat)ADV_SCREEN_H/screenh;

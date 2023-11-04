@@ -63,6 +63,10 @@ extern struct adv_video {
   int splash_id;
   int splash_duration; // counts down
   
+  GLuint texture_mid;
+  GLuint fb_mid;
+  GLfloat mid_vtxv[20]; // same as splash_vtxv
+  
   int main_menu_enable;
   
 } adv_video;

@@ -122,3 +122,8 @@ void glx_get_screen_size(int *w,int *h) {
   *w=eh_glx_global->w;
   *h=eh_glx_global->h;
 }
+
+void glx_toggle_fullscreen() {
+  if (!eh_glx_global) return;
+  _glx_set_fullscreen(eh_glx_global,eh_glx_global->fullscreen?0:1);
+}

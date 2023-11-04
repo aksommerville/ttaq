@@ -1,6 +1,7 @@
 #include "eh_glx_internal.h"
 #include "adv.h"
 #include "input/adv_input.h"
+#include "video/adv_video.h"
 
 /* Key press, release, or repeat.
  */
@@ -38,9 +39,7 @@ static int eh_glx_evt_configure(struct eh_video_driver *driver,XConfigureEvent *
   if ((nw!=driver->w)||(nh!=driver->h)) {
     driver->w=nw;
     driver->h=nh;
-    /*TODO if (driver->delegate.cb_resize) {
-      driver->delegate.cb_resize(nw,nh,driver->delegate.userdata);
-    }*/
+    adv_video_resized(nw,nh);
   }
   return 0;
 }

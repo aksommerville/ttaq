@@ -28,8 +28,8 @@ src/main/adv_main.c:72:  //TODO akau_quit();
 src/shaders/plainsprites_v.essl:16:  gl_PointSize=32.0;//TODO pass sprite size as a uniform?
 
 [x] Audio drivers.
-[ ] glx: Tolerate window resize.
-[ ] Add a useraction to toggle fullscreen.
+[x] glx: Tolerate window resize.
+[x] Add a useraction to toggle fullscreen.
 [x] evdev driver.
 [ ] drm driver.
 [ ] bcm driver.

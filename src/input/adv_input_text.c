@@ -825,6 +825,7 @@ int adv_useraction_eval(const char *src,int srcc) {
   if ((srcc==4)&&!adv_memcasecmp(src,"QUIT",4)) return ADV_USERACTION_QUIT;
   if ((srcc==4)&&!adv_memcasecmp(src,"SAVE",4)) return ADV_USERACTION_SAVE;
   if ((srcc==5)&&!adv_memcasecmp(src,"PAUSE",5)) return ADV_USERACTION_PAUSE;
+  if ((srcc==10)&&!adv_memcasecmp(src,"FULLSCREEN",10)) return ADV_USERACTION_FULLSCREEN;
   return -1;
 }
 

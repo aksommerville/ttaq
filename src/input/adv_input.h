@@ -23,9 +23,10 @@
 #define ADV_BTNID_DETACH     0x40 // optional
 #define ADV_BTNID_FOLLOWME   0x80 // optional
 
-#define ADV_USERACTION_QUIT     1
-#define ADV_USERACTION_PAUSE    2
-#define ADV_USERACTION_SAVE     3
+#define ADV_USERACTION_QUIT       1
+#define ADV_USERACTION_PAUSE      2
+#define ADV_USERACTION_SAVE       3
+#define ADV_USERACTION_FULLSCREEN 4
 
 // Read only. [0] is dummy.
 extern unsigned char adv_inputs[1+ADV_PLAYER_LIMIT];

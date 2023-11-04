@@ -4,6 +4,55 @@
 
 struct adv_video adv_video={0};
 
+/* Output bounds.
+ *********************************************************/
+ 
+static void adv_video_recalculate_mid_vtxv() {
+
+  int dstw,dsth;
+  if ((dstw=(ADV_SCREEN_W*adv_video.screenh)/ADV_SCREEN_H)<=adv_video.screenw) {
+    dsth=adv_video.screenh;
+  } else {
+    dstw=adv_video.screenw;
+    dsth=(ADV_SCREEN_H*adv_video.screenw)/ADV_SCREEN_W;
+  }
+  GLfloat xscale=(GLfloat)dstw/(GLfloat)adv_video.screenw;
+  GLfloat yscale=(GLfloat)dsth/(GLfloat)adv_video.screenh;
+
+  GLfloat *dst=adv_video.mid_vtxv;
+  
+  dst[0]=-1.0f*xscale;
+  dst[1]=1.0f*yscale;
+  dst[2]=0.0f;
+  dst[3]=1.0f;
+  dst[4]=1.0f;
+  
+  dst[5]=-1.0f*xscale;
+  dst[6]=-1.0f*yscale;
+  dst[7]=0.0f;
+  dst[8]=0.0f;
+  dst[9]=1.0f;
+  
+  dst[10]=1.0f*xscale;
+  dst[11]=1.0f*yscale;
+  dst[12]=1.0f;
+  dst[13]=1.0f;
+  dst[14]=1.0f;
+  
+  dst[15]=1.0f*xscale;
+  dst[16]=-1.0f*yscale;
+  dst[17]=1.0f;
+  dst[18]=0.0f;
+  dst[19]=1.0f;
+}
+
+void adv_video_resized(int w,int h) {
+  if ((w<1)||(h<1)) return;
+  adv_video.screenw=w;
+  adv_video.screenh=h;
+  adv_video_recalculate_mid_vtxv();
+}
+
 /* init
  *****************************************************************************/
 
@@ -36,6 +85,18 @@ int adv_video_init() {
   if (!(adv_video.bgbuffer=calloc(ADV_SCREEN_W*3,ADV_SCREEN_H))) return -1;
 
   if ((err=adv_shaders_load())<0) return err;
+  
+  glGenTextures(1,&adv_video.texture_mid);
+  glBindTexture(GL_TEXTURE_2D,adv_video.texture_mid);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); // GL_NEAREST also sensible. Can we make it configurable?
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+  glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,ADV_SCREEN_W,ADV_SCREEN_H,0,GL_RGB,GL_UNSIGNED_INT,0);
+  glGenFramebuffers(1,&adv_video.fb_mid);
+  glBindFramebuffer(GL_FRAMEBUFFER,adv_video.fb_mid);
+  glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,adv_video.texture_mid,0);
+  glBindFramebuffer(GL_FRAMEBUFFER,0);
 
   glGenTextures(1,&adv_video.texture_bg);
   glBindTexture(GL_TEXTURE_2D,adv_video.texture_bg);
@@ -59,7 +120,8 @@ int adv_video_init() {
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 
   glBlendFuncSeparate(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,GL_SRC_ALPHA,GL_DST_ALPHA);
-  glScissor((adv_video.screenw>>1)-(ADV_SCREEN_W>>1),(adv_video.screenh>>1)-(ADV_SCREEN_H>>1),ADV_SCREEN_W,ADV_SCREEN_H);
+  
+  adv_video_recalculate_mid_vtxv();
   
   if (glGetError()) return -1;
   return 0;
@@ -77,6 +139,8 @@ void adv_video_quit() {
   glDeleteTextures(1,&adv_video.texture_plainsprites);
   glDeleteProgram(adv_video.program_splash);
   glDeleteTextures(1,&adv_video.texture_splash);
+  glDeleteTextures(1,&adv_video.texture_mid);
+  glDeleteFramebuffers(1,&adv_video.fb_mid);
   
   #if USE_glx
     glx_quit();
@@ -116,10 +180,9 @@ int adv_video_update() {
     if (bcm_begin()<0) return err;
   #endif
   
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  glEnable(GL_SCISSOR_TEST);
-
+  glBindFramebuffer(GL_FRAMEBUFFER,adv_video.fb_mid);
+  glViewport(0,0,ADV_SCREEN_W,ADV_SCREEN_H);
+  
   /* Draw background. */
   glUseProgram(adv_video.program_bg);
   if (adv_video.do_lights_out) {
@@ -192,6 +255,24 @@ int adv_video_update() {
     glDrawArrays(GL_TRIANGLE_STRIP,0,4);
     glDisableVertexAttribArray(ADV_VTXATTR_OPACITY);
   }
+  
+  /* Transfer to main output. */
+  glBindFramebuffer(GL_FRAMEBUFFER,0);
+  glViewport(0,0,adv_video.screenw,adv_video.screenh);
+  glClearColor(0.0f,0.0f,0.0f,1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glDisable(GL_BLEND);
+  glUseProgram(adv_video.program_splash);
+  glBindTexture(GL_TEXTURE_2D,adv_video.texture_mid);
+  glEnableVertexAttribArray(ADV_VTXATTR_POSITION);
+  glEnableVertexAttribArray(ADV_VTXATTR_TEXPOSITION);
+  glEnableVertexAttribArray(ADV_VTXATTR_OPACITY);
+  glDisableVertexAttribArray(ADV_VTXATTR_XFORM);
+  glVertexAttribPointer(ADV_VTXATTR_POSITION,2,GL_FLOAT,GL_FALSE,sizeof(GLfloat)*5,adv_video.mid_vtxv+0);
+  glVertexAttribPointer(ADV_VTXATTR_TEXPOSITION,2,GL_FLOAT,GL_FALSE,sizeof(GLfloat)*5,adv_video.mid_vtxv+2);
+  glVertexAttribPointer(ADV_VTXATTR_OPACITY,1,GL_FLOAT,GL_FALSE,sizeof(GLfloat)*5,adv_video.mid_vtxv+4);
+  glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+  glDisableVertexAttribArray(ADV_VTXATTR_OPACITY);
 
   #if USE_glx
     if (glx_end()<0) return err;
@@ -310,8 +391,8 @@ int adv_video_splash(int imgid,int duration) {
   /* Try to put the image's center at 1/2 horizontally and 1/3 vertically.
    * Clamp to screen edges as necessary.
    */
-  GLfloat adjw=(w*2.0f)/adv_video.screenw;
-  GLfloat adjh=(h*2.0f)/adv_video.screenh;
+  GLfloat adjw=(w*2.0f)/ADV_SCREEN_W;
+  GLfloat adjh=(h*2.0f)/ADV_SCREEN_H;
   if (adjw<0.1) adjw=0.1; else if (adjw>2.0) adjw=2.0;
   if (adjh<0.1) adjh=0.1; else if (adjh>2.0) adjh=2.0;
   GLfloat left=adjw*-0.5f;
@@ -352,4 +433,14 @@ int adv_video_end_main_menu() {
 
 int adv_video_is_main_menu() {
   return adv_video.main_menu_enable;
+}
+
+/* Toggle fullscreen.
+ *************************************************************/
+ 
+void adv_video_toggle_fullscreen() {
+  #if USE_glx
+    glx_toggle_fullscreen();
+  #endif
+  // drm and bcm won't do this; they are inherently fullscreen always.
 }
