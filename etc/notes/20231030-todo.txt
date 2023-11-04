@@ -1,5 +1,5 @@
 [x] drm driver.
-[ ] bcm driver.
+[x] bcm driver.
 [x] Need a means to quit when there's no window manager.
 [x] Update README.
 [ ] Make a page on Itch.

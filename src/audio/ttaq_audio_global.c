@@ -22,7 +22,11 @@ int ttaq_audio_init() {
       .userdata=&ttaq_audio.synth,
       .pcm_out=(void*)ttaq_synth_update,
     };
-    if (ttaq_audio.alsa=alsapcm_new(&delegate,0)) {
+    struct alsapcm_setup setup={
+      .rate=44100,
+      .chanc=1,
+    };
+    if (ttaq_audio.alsa=alsapcm_new(&delegate,&setup)) {
       ttaq_audio.rate=alsapcm_get_rate(ttaq_audio.alsa);
       ttaq_audio.chanc=alsapcm_get_chanc(ttaq_audio.alsa);
     } else {

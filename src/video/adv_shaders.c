@@ -23,7 +23,12 @@ static GLuint adv_shaders_compile(const char *refname,const char *vsrc,const cha
   GLuint program=glCreateProgram();
   if (!program) return 0;
 
-  const char *versionstr="#version 120\n";//TODO should be 100 for old raspi
+  #ifndef TTAQ_GLSL_VERSION
+    #define TTAQ_GLSL_VERSION 120
+  #endif
+  char versionstr[32];
+  int versionstrc=snprintf(versionstr,sizeof(versionstr),"#version %d\n",TTAQ_GLSL_VERSION);
+  if ((versionstrc<1)||(versionstrc>=sizeof(versionstr))) return 0;
   const char *combinedsrc[2]={versionstr};
   combinedsrc[1]=vsrc;
   glShaderSource(vshader,2,combinedsrc,0);

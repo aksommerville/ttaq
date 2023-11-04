@@ -23,6 +23,8 @@ int ttaq_synth_init(struct ttaq_synth *synth,int rate,int chanc) {
   
   synth->rate=rate;
   synth->chanc=chanc;
+
+  fprintf(stderr,"%s rate=%d chanc=%d\n",__func__,rate,chanc);
   
   return 0;
 }
@@ -104,7 +106,7 @@ static void ttaq_synth_quantize(int16_t *dst,const float *src,int c,struct ttaq_
 static void ttaq_synth_generate_signal(int16_t *v,int c,struct ttaq_synth *synth) {
   while (c>=TTAQ_SYNTH_BUFFER_SIZE) {
     ttaq_synth_update_f(synth->buffer,TTAQ_SYNTH_BUFFER_SIZE,synth);
-    ttaq_synth_quantize(v,synth->buffer,c,synth);
+    ttaq_synth_quantize(v,synth->buffer,TTAQ_SYNTH_BUFFER_SIZE,synth);
     v+=TTAQ_SYNTH_BUFFER_SIZE;
     c-=TTAQ_SYNTH_BUFFER_SIZE;
   }

@@ -73,11 +73,12 @@ int adv_video_init() {
     }
     fmn_drm_get_screen_size(&adv_video.screenw,&adv_video.screenh);
   #elif USE_bcm
-    if (bcm_init()<0) {
-      fprintf(stderr,"bcm_init failed\n");
+    if (fmn_bcm_init()<0) {
+      fprintf(stderr,"fmn_bcm_init failed\n");
       return -1;
     }
-    bcm_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+    adv_video.screenw=fmn_bcm_get_width();
+    adv_video.screenh=fmn_bcm_get_height();
   #endif
   
   glClearColor(0.0,0.0,0.0,1.0);
@@ -92,7 +93,7 @@ int adv_video_init() {
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-  glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,ADV_SCREEN_W,ADV_SCREEN_H,0,GL_RGB,GL_UNSIGNED_INT,0);
+  glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,ADV_SCREEN_W,ADV_SCREEN_H,0,GL_RGB,GL_UNSIGNED_BYTE,0);
   glGenFramebuffers(1,&adv_video.fb_mid);
   glBindFramebuffer(GL_FRAMEBUFFER,adv_video.fb_mid);
   glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,adv_video.texture_mid,0);
@@ -147,7 +148,7 @@ void adv_video_quit() {
   #elif USE_drm
     fmn_drm_quit();
   #elif USE_bcm
-    bcm_quit();
+    fmn_bcm_quit();
   #endif
   
   memset(&adv_video,0,sizeof(struct adv_video));
@@ -186,6 +187,8 @@ int adv_video_update() {
   /* Draw background. */
   glUseProgram(adv_video.program_bg);
   if (adv_video.do_lights_out) {
+    glClearColor(0.0f,0.0f,0.0f,1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_BLEND);
     glUniform1f(adv_video.bg_lights_out_location,(adv_video.do_lights_out==1)?0.1:2.0);
     glUniform2f(adv_video.bg_lightpos_location,adv_video.lightsoutx,adv_video.lightsouty);
@@ -279,7 +282,7 @@ int adv_video_update() {
   #elif USE_drm
     if (fmn_drm_swap()<0) return -1;
   #elif USE_bcm
-    if (bcm_end()<0) return -1;
+    if (fmn_bcm_swap()<0) return -1;
   #endif
   
   return 0;

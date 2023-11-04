@@ -17,7 +17,7 @@
   #define HAVE_VIDEO_BACKEND 1
 #endif
 #if USE_bcm
-  #include "opt/bcm/bcm.h"
+  #include "opt/bcm/fmn_bcm.h"
   #define HAVE_VIDEO_BACKEND 1
 #endif
 #ifndef HAVE_VIDEO_BACKEND

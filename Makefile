@@ -15,15 +15,15 @@ GAME:=out/ttaq
 # "old pi with bcm": Specific to early Raspberry Pi. Newer ones should use "linux guiless". (if Linux DRM is available)
 ifeq (old pi with bcm,)
   OPT_ENABLE:=bcm alsa evdev
-  CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include $(foreach U,$(OPT_ENABLE),-DUSE_$U)
+  CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=100
   AS:=gcc -xassembler-with-cpp -c -O2
   LD:=gcc -L/opt/vc/lib
-  LDPOST:=-lGLESv2 -lz
+  LDPOST:=-lm -lz -lpthread -lGLESv2 -lEGL -lbcm_host
 
 # "linux desktop": GLX for video and keyboard events. A typical choice.
 else ifeq (linux desktop,)
   OPT_ENABLE:=glx alsa evdev
-  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit $(foreach U,$(OPT_ENABLE),-DUSE_$U)
+  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
   LDPOST:=-lm -lz -lGL -lGLX -lX11
@@ -31,7 +31,7 @@ else ifeq (linux desktop,)
 # "linux guiless": DRM. Won't run with an X server. Good for newer Raspberry Pi, and bespoke game consoles.
 else ifeq (linux guiless,)
   OPT_ENABLE:=drm alsa evdev
-  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U)
+  CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
   LDPOST:=-lm -lz -lGL -ldrm -lEGL -lgbm
