@@ -8,35 +8,36 @@ PRECMD=echo "  $(@F)" ; mkdir -p "$(@D)" ;
 
 GAME:=out/ttaq
 
-CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include
-AS:=gcc -xassembler-with-cpp -c -O2
-LD:=gcc -L/opt/vc/lib
-LDPOST:=-lpig-static -lpipng-static -llinput-static -lGLESv2 -lz -lakau-static -lasound
-
 # Hello user!
 # Please pick the appropriate configuration and enable it like so:
 #   ifeq (old pi with bcm,old pi with bcm) # <-- same string twice = enabled
 
+# "old pi with bcm": Specific to early Raspberry Pi. Newer ones should use "linux guiless". (if Linux DRM is available)
 ifeq (old pi with bcm,)
   OPT_ENABLE:=bcm alsa evdev
   CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include $(foreach U,$(OPT_ENABLE),-DUSE_$U)
   AS:=gcc -xassembler-with-cpp -c -O2
   LD:=gcc -L/opt/vc/lib
-  LDPOST:=-lGLESv2 -lz -lasound
-  
-else ifeq (linux desktop,linux desktop)
+  LDPOST:=-lGLESv2 -lz
+
+# "linux desktop": GLX for video and keyboard events. A typical choice.
+else ifeq (linux desktop,)
   OPT_ENABLE:=glx alsa evdev
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit $(foreach U,$(OPT_ENABLE),-DUSE_$U)
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
   LDPOST:=-lm -lz -lGL -lGLX -lX11
-  
+
+# "linux guiless": DRM. Won't run with an X server. Good for newer Raspberry Pi, and bespoke game consoles.
 else ifeq (linux guiless,)
   OPT_ENABLE:=drm alsa evdev
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U)
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
-  LDPOST:=-lm -lz -lGL -ldrm
+  LDPOST:=-lm -lz -lGL -ldrm -lEGL -lgbm
+  
+# If we supported Mac, Windows, or exotic driver configurations, they'd be called out right here.
+# I don't plan to support Mac or Windows, by the way. Would be a fairly light lift if we ever want to.
   
 else
   $(error Please select configuration. Edit Makefile)
@@ -46,6 +47,7 @@ endif
 # Build programs.
 
 CFILES:=$(shell find src -name '*.c')
+CFILES:=$(filter-out src/opt/%,$(CFILES)) $(filter $(addprefix src/opt/,$(addsuffix /%,$(OPT_ENABLE))),$(CFILES))
 OFILES_ALL:=$(patsubst src/%.c,mid/%.o,$(CFILES))
 -include $(OFILES_ALL:.o=.d)
 mid/%.o:src/%.c;$(PRECMD) $(CC) -o $@ $<

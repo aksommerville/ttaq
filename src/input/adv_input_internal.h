@@ -9,6 +9,8 @@
   #include "opt/evdev/evdev.h"
 #endif
 
+#define ADV_KEYMAP_USERACTION 0x40000000 /* Set in adv_keymap.btn if it's actually a stateless useraction. */
+
 struct adv_useraction {
   int keycode,useraction;
 };

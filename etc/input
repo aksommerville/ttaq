@@ -151,6 +151,7 @@ device "Microsoft X-Box 360 pad"
   BTN_TL     FOLLOWME
   BTN_SELECT SWITCH
   BTN_START  DETACH
+  BTN_MODE   QUIT
 end
 
 device "snowman" # wiimote

@@ -13,7 +13,7 @@
   #define HAVE_VIDEO_BACKEND 1
 #endif
 #if USE_drm
-  #include "opt/drm/drm.h"
+  #include "opt/drm/fmn_drm.h"
   #define HAVE_VIDEO_BACKEND 1
 #endif
 #if USE_bcm

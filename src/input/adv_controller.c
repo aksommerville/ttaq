@@ -199,8 +199,13 @@ static void adv_controller_clickin(struct adv_controller *controller) {
 /* set button
  *****************************************************************************/
  
-static void adv_controller_set_btn(struct adv_controller *controller,unsigned char btn,int value) {
+static void adv_controller_set_btn(struct adv_controller *controller,unsigned int btn,int value) {
   if (!btn) return;
+  if (btn&ADV_KEYMAP_USERACTION) {
+    if (!value) return;
+    adv_input_useraction(btn&~ADV_KEYMAP_USERACTION);
+    return;
+  }
   if (value) {
     if (btn==ADV_BTNID_DETACH) {
       if ((controller->playerid>=1)&&(controller->playerid<=ADV_PLAYER_LIMIT)) {

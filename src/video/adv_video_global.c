@@ -67,11 +67,11 @@ int adv_video_init() {
     }
     glx_get_screen_size(&adv_video.screenw,&adv_video.screenh);
   #elif USE_drm
-    if (drm_init()<0) {
-      fprintf(stderr,"drm_init failed\n");
+    if (fmn_drm_init()<0) {
+      fprintf(stderr,"fmn_drm_init failed\n");
       return -1;
     }
-    drm_get_screen_size(&adv_video.screenw,&adv_video.screenh);
+    fmn_drm_get_screen_size(&adv_video.screenw,&adv_video.screenh);
   #elif USE_bcm
     if (bcm_init()<0) {
       fprintf(stderr,"bcm_init failed\n");
@@ -145,7 +145,7 @@ void adv_video_quit() {
   #if USE_glx
     glx_quit();
   #elif USE_drm
-    drm_quit();
+    fmn_drm_quit();
   #elif USE_bcm
     bcm_quit();
   #endif
@@ -175,9 +175,9 @@ int adv_video_update() {
     if (glx_update()<0) return err;
     if (glx_begin()<0) return err;
   #elif USE_drm
-    if (drm_begin()<0) return err;
+    // context always active, and no events
   #elif USE_bcm
-    if (bcm_begin()<0) return err;
+    // context always active, and no events
   #endif
   
   glBindFramebuffer(GL_FRAMEBUFFER,adv_video.fb_mid);
@@ -275,11 +275,11 @@ int adv_video_update() {
   glDisableVertexAttribArray(ADV_VTXATTR_OPACITY);
 
   #if USE_glx
-    if (glx_end()<0) return err;
+    if (glx_end()<0) return -1;
   #elif USE_drm
-    if (drm_end()<0) return err;
+    if (fmn_drm_swap()<0) return -1;
   #elif USE_bcm
-    if (bcm_end()<0) return err;
+    if (bcm_end()<0) return -1;
   #endif
   
   return 0;

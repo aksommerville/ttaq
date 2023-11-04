@@ -322,8 +322,12 @@ int adv_inmap_eval_argument(struct adv_inmap *inmap,const char *src,int srcc,con
   } else if (wordc==2) { // axis or button
     int btnid=adv_btnid_eval(wordv[1],lenv[1]); // get this out of the way first since both branches will need it
     if (btnid<0) {
-      if (refname) fprintf(stderr,"%s:%d: '%.*s' does not name a player button (UP,DOWN,LEFT,RIGHT,ACTION,SWITCH,DETACH,FOLLOWME)\n",refname,lineno,lenv[1],wordv[1]);
-      return -1;
+      if ((btnid=adv_useraction_eval(wordv[1],lenv[1]))>=0) {
+        btnid|=ADV_KEYMAP_USERACTION;
+      } else {
+        if (refname) fprintf(stderr,"%s:%d: '%.*s' does not name a player button (UP,DOWN,LEFT,RIGHT,ACTION,SWITCH,DETACH,FOLLOWME)\n",refname,lineno,lenv[1],wordv[1]);
+        return -1;
+      }
     }
     int code=adv_keycode_eval(wordv[0],lenv[0]);
     if (
