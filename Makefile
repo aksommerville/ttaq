@@ -26,7 +26,7 @@ else ifeq (linux desktop,)
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
-  LDPOST:=-lm -lz -lGL -lGLX -lX11
+  LDPOST:=-lm -lz -lpthread -lGL -lGLX -lX11
 
 # "linux guiless": DRM. Won't run with an X server. Good for newer Raspberry Pi, and bespoke game consoles.
 else ifeq (linux guiless,)
@@ -34,7 +34,11 @@ else ifeq (linux guiless,)
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
-  LDPOST:=-lm -lz -lGL -ldrm -lEGL -lgbm
+  LDPOST:=-lm -lz -lpthread -lGL -ldrm -lEGL -lgbm
+  # DRM device is usually card0, but on the Pi 4 for some reason it's always card1. card0 is the default.
+  ifeq ($(shell uname -n),raspberrypi)
+    CC+=-DTTAQ_DRM_DEVICE=\"/dev/dri/card1\"
+  endif
   
 # If we supported Mac, Windows, or exotic driver configurations, they'd be called out right here.
 # I don't plan to support Mac or Windows, by the way. Would be a fairly light lift if we ever want to.

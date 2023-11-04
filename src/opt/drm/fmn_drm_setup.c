@@ -7,8 +7,10 @@ int drm_open_file() {
 
   //TODO we now may have a poller -- fmn_drm.delegate.poller. Register the file there, and don't poll on our own.
 
-  //TODO allow user to configure, somehow
-  const char *device_path="/dev/dri/card0";
+  #ifndef TTAQ_DRM_DEVICE
+    #define TTAQ_DRM_DEVICE "/dev/dri/card0";
+  #endif
+  const char *device_path=TTAQ_DRM_DEVICE;
   
   if ((fmn_drm.fd=open(device_path,O_RDWR))<0) {
     fprintf(stderr,"%s: %m\n",device_path);
