@@ -188,3 +188,13 @@ device "USB Gamepad" # NES+SNES knockoffs (they are identical at protocol level)
   BTN:0x124    FOLLOWME # L
   BTN:0x125    SWITCH   # R
 end
+
+device "Atari Game Controller"
+  ABS_HAT0X  LEFT RIGHT
+		ABS_HAT0Y  UP DOWN
+		BTN_A      ACTION
+		BTN_TR     SWITCH
+		BTN_TL     FOLLOWME
+		BTN:172    QUIT
+		BTN:158    DETACH
+end
