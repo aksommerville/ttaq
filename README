@@ -4,7 +4,24 @@ By Andy Sommerville: ak sommerville at g mail dot com
 Updated 3 November 2023
 
 -------------------------------------------------------------------------------
-BUILD AND INSTALL
+BUILD AND INSTALL - BINARY
+
+Launch from the archive's top directory (the one containing "data" and the executables).
+
+Pick the appropriate executable:
+  glx: x86, most desktop Linux installations. Requires a running X server.
+  drm: x86, Linux without an X server. I run this on an Atari VCS.
+  raspi1: ARM, Linux with Broadcom video, for Raspberry Pi model 1.
+  raspi4: ARM, Linux with DRM, for Raspberry Pi model 4.
+  
+If none of those works for your system, try building from source?
+https://github.com/aksommerville/ttaq
+
+Q: No Mac or Windows support?
+A: It could be done, I just haven't felt the need.
+
+-------------------------------------------------------------------------------
+BUILD AND INSTALL - SOURCE
 
 First, edit Makefile to select a configuration. See comments there.
 
