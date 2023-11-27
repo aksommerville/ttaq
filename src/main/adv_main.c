@@ -52,7 +52,7 @@ static int adv_init(int argc,char **argv) {
   if ((err=adv_sprgrp_init())<0) return err;
   if ((err=adv_input_init())<0) return err;
   if ((err=adv_video_init())<0) return err;
-  if ((err=adv_res_init((argc>=1)?argv[0]:""))<0) return err;
+  if ((err=adv_res_init((argc>=1)?argv[0]:"",argc,argv))<0) return err;
   
   if ((err=adv_input_map_useraction(KEY_ESC,ADV_USERACTION_QUIT))<0) return err;
   if ((err=adv_input_map_useraction(KEY_P,ADV_USERACTION_PAUSE))<0) return err;

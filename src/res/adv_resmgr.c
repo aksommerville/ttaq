@@ -37,8 +37,18 @@ static int adv_res_check_data_path(const char *path,int pathc) {
 /* locate data directory, outer
  *****************************************************************************/
 
-static int adv_res_locate_data(const char *programpath) {
+static int adv_res_locate_data(const char *programpath,int argc,char **argv) {
   int i,err;
+  
+  // If we got an argument "--data=PATH", that's the final answer.
+  for (i=1;i<argc;i++) {
+    if (memcmp(argv[i],"--data=",7)) continue;
+    if (adv_resmgr.root) free(adv_resmgr.root);
+    if (!(adv_resmgr.root=strdup(argv[i]+7))) return -1;
+    adv_resmgr.rootc=0;
+    while (adv_resmgr.root[adv_resmgr.rootc]) adv_resmgr.rootc++;
+    return 0;
+  }
 
   // If there is a slash in argv[0], look in the directory containing this program.
   // This will not look in the root directory.
@@ -235,13 +245,13 @@ static int adv_res_enumerate_tilesheets() {
 /* init
  *****************************************************************************/
 
-int adv_res_init(const char *programpath) {
+int adv_res_init(const char *programpath,int argc,char **argv) {
   adv_res_wipe_globals();
   
   adv_resmgr.bgimageid=-1;
   adv_resmgr.sprimageid=-1;
   
-  if (adv_res_locate_data(programpath)<0) return -1;
+  if (adv_res_locate_data(programpath,argc,argv)<0) return -1;
   printf("%s: Using data set at '%.*s'.\n",programpath,adv_resmgr.rootc,adv_resmgr.root);
   if (adv_res_enumerate_tilesheets()<0) return -1;
 

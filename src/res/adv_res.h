@@ -18,7 +18,7 @@ struct adv_sprdef;
 // Between adv_res_init() and adv_res_quit(), this always points to something legal.
 extern struct adv_map *adv_map;
 
-int adv_res_init(const char *programpath);
+int adv_res_init(const char *programpath,int argc,char **argv);
 void adv_res_quit();
 
 /* Replaces global map and redraws tilesheets as necessary.
