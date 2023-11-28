@@ -8,28 +8,46 @@ PRECMD=echo "  $(@F)" ; mkdir -p "$(@D)" ;
 
 GAME:=out/ttaq
 
-# Hello user!
-# Please pick the appropriate configuration and enable it like so:
-#   ifeq (old pi with bcm,old pi with bcm) # <-- same string twice = enabled
+ifndef BUILDCONFIG
+  UNAMENM:=$(shell uname -nm)
+  UNAMES:=$(shell uname -s)
+  ifeq ($(UNAMENM),nuc x86_64)
+    BUILDCONFIG:=linux-desktop
+  else ifeq ($(UNAMENM),vcs x86_64) # TODO confirm
+    BUILDCONFIG:=linux-guiless
+  else ifeq ($(UNAMENM),raspberrypi armv7) # TODO confirm
+    BUILDCONFIG:=linux-guiless
+  else ifeq ($(UNAMENM),raspberrypi armv6l) # TODO confirm
+    BUILDCONFIG:=linux-raspi1
+  else ifeq ($(UNAMES),Linux)
+    BUILDCONFIG:=linux-desktop
+  else ifeq ($(UNAMES),Darwin)
+    $(error MacOS not supported)
+  else ifneq (,$(strip $(filter MINGW%,$(UNAMES))))
+    $(error MS Windows not supported)
+  else
+    $(error Unable to guess host configuration. Please set BUILDCONFIG or edit Makefile)
+  endif
+endif
 
-# "old pi with bcm": Specific to early Raspberry Pi. Newer ones should use "linux guiless". (if Linux DRM is available)
-ifeq (old pi with bcm,)
+# "linux-raspi1": Specific to early Raspberry Pi. Newer ones should use "linux-guiless". (if Linux DRM is available)
+ifeq ($(BUILDCONFIG),linux-raspi1)
   OPT_ENABLE:=bcm alsa evdev
   CC:=gcc -c -MMD -O2 -Isrc -Werror -Wimplicit -I/opt/vc/include $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=100
   AS:=gcc -xassembler-with-cpp -c -O2
   LD:=gcc -L/opt/vc/lib
   LDPOST:=-lm -lz -lpthread -lGLESv2 -lEGL -lbcm_host
 
-# "linux desktop": GLX for video and keyboard events. A typical choice.
-else ifeq (linux desktop,)
+# "linux-desktop": GLX for video and keyboard events. A typical choice.
+else ifeq ($(BUILDCONFIG),linux-desktop)
   OPT_ENABLE:=glx alsa evdev
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
   LDPOST:=-lm -lz -lpthread -lGL -lGLX -lX11
 
-# "linux guiless": DRM. Won't run with an X server. Good for newer Raspberry Pi, and bespoke game consoles.
-else ifeq (linux guiless,)
+# "linux-guiless": DRM. Won't run with an X server. Good for newer Raspberry Pi, and bespoke game consoles.
+else ifeq ($(BUILDCONFIG),linux-guiless)
   OPT_ENABLE:=drm alsa evdev
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
@@ -40,11 +58,8 @@ else ifeq (linux guiless,)
     CC+=-DTTAQ_DRM_DEVICE=\"/dev/dri/card1\"
   endif
   
-# If we supported Mac, Windows, or exotic driver configurations, they'd be called out right here.
-# I don't plan to support Mac or Windows, by the way. Would be a fairly light lift if we ever want to.
-  
 else
-  $(error Please select configuration. Edit Makefile)
+  $(error BUILDCONFIG $(BUILDCONFIG) not defined. Edit Makefile)
 endif
 
 #------------------------------------------------------------------------------

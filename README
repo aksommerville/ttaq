@@ -24,6 +24,7 @@ A: It could be done, I just haven't felt the need.
 BUILD AND INSTALL - SOURCE
 
 First, edit Makefile to select a configuration. See comments there.
+There's a chance that plain `make` will figure it out, but don't bet on it.
 
 From this directory, enter:
   make install
