@@ -15,7 +15,7 @@ ifndef BUILDCONFIG
     BUILDCONFIG:=linux-desktop
   else ifeq ($(UNAMENM),vcs x86_64) # TODO confirm
     BUILDCONFIG:=linux-guiless
-  else ifeq ($(UNAMENM),raspberrypi armv7) # TODO confirm
+  else ifeq ($(UNAMENM),raspberrypi aarch64) # pi 4
     BUILDCONFIG:=linux-guiless
   else ifeq ($(UNAMENM),raspberrypi armv6l) # TODO confirm
     BUILDCONFIG:=linux-raspi1
