@@ -198,3 +198,45 @@ device "Atari Game Controller"
 		BTN:172    QUIT
 		BTN:158    DETACH
 end
+
+device "MY-POWER CO.,LTD. 2In1 USB Joystick"
+  ABS_HAT0X LEFT RIGHT
+  ABS_HAT0Y UP DOWN
+  BTN:0x120 FOLLOWME # delta
+#  BTN:0x121 ACTION # circle
+  BTN:0x122 ACTION # x
+#  BTN:0x123 ACTION
+#  BTN:0x124 QUIT # l1
+  BTN:0x125 SWITCH # r1
+#  BTN:0x126 QUIT
+#  BTN:0x127 QUIT # select?
+#  BTN:0x128 QUIT # select?
+  BTN:0x129 QUIT # start
+#  BTN:0x12a DETACH # lp
+#  BTN:0x12b FOLLOWME # rp
+end
+
+device "8BitDo 8BitDo Pro 2"
+  ABS_HAT0X LEFT RIGHT
+  ABS_HAT0Y UP DOWN
+#  BTN:0x130 ACTION # east
+  BTN:0x131 ACTION # south
+  BTN:0x133 FOLLOWME # north
+#  BTN:0x134 ACTION # west
+  BTN:0x136 SWITCH # l1
+  BTN:0x137 SWITCH # r1
+#  BTN:0x138 ACTION # l2
+#  BTN:0x139 SWITCH # r2
+#  BTN:0x13a FOLLOWME # select
+  BTN:0x13b QUIT # start
+end
+
+device "Atari Classic Controller"
+  ABS_HAT0X LEFT RIGHT
+  ABS_HAT0Y UP DOWN
+  BTN:0x130 ACTION # primary
+  BTN:0x131 SWITCH # secondary
+  BTN:0x8b PAUSE # hamburger
+  BTN:0x9e QUIT # back
+  BTN:0xac FOLLOWME # atari
+end
