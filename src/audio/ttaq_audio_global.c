@@ -10,7 +10,11 @@ int ttaq_audio_init() {
   memset(&ttaq_audio,0,sizeof(struct ttaq_audio));
   
   #if USE_pulse
-    if (ttaq_audio.pulse=pulse_new(...)) {//TODO
+    if (ttaq_audio.pulse=pulse_new(
+      44100,1,
+      (void*)ttaq_synth_update,&ttaq_audio.synth,
+      "Tag Team Adventure Quest"
+    )) {
       ttaq_audio.rate=pulse_get_rate(ttaq_audio.pulse);
       ttaq_audio.chanc=pulse_get_chanc(ttaq_audio.pulse);
     } else {
@@ -62,7 +66,7 @@ void ttaq_audio_quit() {
 int ttaq_audio_update() {
   if (!ttaq_audio.rate) return 0;
   #if USE_pulse
-    if (pulse_update(ttaq_audio.pulse)<0) return -1;
+    //if (pulse_update(ttaq_audio.pulse)<0) return -1;
   #elif USE_alsa
     if (alsapcm_update(ttaq_audio.alsa)<0) return -1;
   #endif

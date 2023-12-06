@@ -10,8 +10,7 @@
 #if USE_pulse
   #include "opt/pulse/pulse.h"
   #define HAVE_AUDIO_DRIVER 1
-#endif
-#if USE_alsa
+#elif USE_alsa
   #include "opt/alsa/alsapcm.h"
   #define HAVE_AUDIO_DRIVER 2
 #endif

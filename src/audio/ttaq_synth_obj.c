@@ -24,8 +24,6 @@ int ttaq_synth_init(struct ttaq_synth *synth,int rate,int chanc) {
   synth->rate=rate;
   synth->chanc=chanc;
 
-  fprintf(stderr,"%s rate=%d chanc=%d\n",__func__,rate,chanc);
-  
   return 0;
 }
 

@@ -11,12 +11,10 @@
 #if USE_glx
   #include "opt/glx/eh_glx.h"
   #define HAVE_VIDEO_BACKEND 1
-#endif
-#if USE_drm
+#elif USE_drm
   #include "opt/drm/fmn_drm.h"
   #define HAVE_VIDEO_BACKEND 1
-#endif
-#if USE_bcm
+#elif USE_bcm
   #include "opt/bcm/fmn_bcm.h"
   #define HAVE_VIDEO_BACKEND 1
 #endif
