@@ -13,7 +13,7 @@ ifndef BUILDCONFIG
   UNAMES:=$(shell uname -s)
   ifeq ($(UNAMENM),nuc x86_64)
     BUILDCONFIG:=linux-desktop
-  else ifeq ($(UNAMENM),vcs x86_64) # TODO confirm
+  else ifeq ($(UNAMENM),vcs x86_64)
     BUILDCONFIG:=linux-guiless
   else ifeq ($(UNAMENM),raspberrypi aarch64) # pi 4
     BUILDCONFIG:=linux-guiless
@@ -54,7 +54,7 @@ else ifeq ($(BUILDCONFIG),linux-desktop)
 
 # "linux-guiless": DRM. Won't run with an X server. Good for newer Raspberry Pi, and bespoke game consoles.
 else ifeq ($(BUILDCONFIG),linux-guiless)
-  OPT_ENABLE:=drm pulse evdev
+  OPT_ENABLE:=drm alsa evdev
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc
