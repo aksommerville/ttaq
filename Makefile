@@ -19,6 +19,8 @@ ifndef BUILDCONFIG
     BUILDCONFIG:=linux-guiless
   else ifeq ($(UNAMENM),raspberrypi armv6l) # TODO confirm
     BUILDCONFIG:=linux-raspi1
+  else ifneq (,$(strip $(filter contop%,$(UNAMENM))))
+    BUILDCONFIG:=linux-guiless
   else ifeq ($(UNAMES),Linux)
     BUILDCONFIG:=linux-desktop
   else ifeq ($(UNAMES),Darwin)
