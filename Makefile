@@ -60,7 +60,7 @@ else ifeq ($(BUILDCONFIG),linux-guiless)
   CC:=gcc -c -MMD -O3 -Isrc -Werror -Wimplicit -I/usr/include/libdrm $(foreach U,$(OPT_ENABLE),-DUSE_$U) -DTTAQ_GLSL_VERSION=120
   AS:=gcc -xassembler-with-cpp -c -O3
   LD:=gcc -z noexecstack
-  LDPOST:=-lm -lz -lpthread -lGL -ldrm -lEGL -lgbm -lpulse-simple
+  LDPOST:=-lm -lz -lpthread -lGL -ldrm -lEGL -lgbm 
   # DRM device is usually card0, but on the Pi 4 for some reason it's always card1. card0 is the default.
   ifeq ($(shell uname -n),raspberrypi)
     CC+=-DTTAQ_DRM_DEVICE=\"/dev/dri/card1\"
